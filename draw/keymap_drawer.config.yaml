@@ -1,0 +1,66 @@
+# keymap-drawer configuration for the Corne Choc Pro.
+#
+# Regenerate with draw/generate.sh, or let the draw-keymaps.yml workflow do it.
+parse_config:
+  # Our custom behaviours would otherwise render as raw node names like
+  # "&swapper". Map them to something readable.
+  raw_binding_map:
+    "&swapper": {t: "Alt+Tab", s: "swap"}
+    "&leader": {t: "Leader"}
+    "&key_repeat": {t: "Repeat"}
+    "&tab_dance": {t: "Tab", s: "S-Tab"}
+    "&num_word NUM": {t: "Num", s: "word"}
+    "&magic_shift LSHFT 0": {t: "Magic", h: "Shift"}
+    "&td_boot": {t: "Boot", s: "2x"}
+    "&td_reset": {t: "Reset", s: "2x"}
+    "&td_btclr": {t: "BT Clr", s: "2x"}
+    "&neq": {t: "!="}
+    "&lte": {t: "<="}
+    "&gte": {t: ">="}
+    "&fatarrow": {t: "=>"}
+    "&arrow": {t: "->"}
+    "&caps_word": {t: "Caps", s: "word"}
+    "&shift_repeat": {t: "Magic", s: "shift"}
+    "&sk RALT": {t: "AltGr", s: "sticky"}
+    # Meh = Ctrl+Shift+Alt; the expanded form is unreadable on a keycap.
+    "&hml LC(LS(LALT)) G": {t: "G", h: "Meh"}
+    "&hmr LC(LS(LALT)) H": {t: "H", h: "Meh"}
+    # Mouse emulation
+    "&mkp LCLK": {t: "L Click"}
+    "&mkp RCLK": {t: "R Click"}
+    "&mkp MCLK": {t: "M Click"}
+    "&mmv MOVE_UP": {t: "Up", s: "mouse"}
+    "&mmv MOVE_DOWN": {t: "Down", s: "mouse"}
+    "&mmv MOVE_LEFT": {t: "Left", s: "mouse"}
+    "&mmv MOVE_RIGHT": {t: "Right", s: "mouse"}
+    "&msc SCRL_UP": {t: "Up", s: "scroll"}
+    "&msc SCRL_DOWN": {t: "Down", s: "scroll"}
+    "&msc SCRL_LEFT": {t: "Left", s: "scroll"}
+    "&msc SCRL_RIGHT": {t: "Right", s: "scroll"}
+
+draw_config:
+  # Adapts to GitHub's light/dark theme when embedded in the README.
+  dark_mode: auto
+  key_w: 62
+  key_h: 56
+  split_gap: 30
+  combo_w: 30
+  combo_h: 24
+  n_columns: 1
+  separate_combo_diagrams: false
+  draw_key_sides: true
+  footer_text: "Corne Choc Pro BT · drawn by keymap-drawer"
+
+  # Layer labels and the footer are drawn with a 4px white outline
+  # (paint-order: stroke) so they stay legible over keys. Ours sit on empty
+  # background, where that just renders as heavy, smeared text in Chrome.
+  # !important because the dark-mode media query re-applies the stroke after
+  # this block.
+  svg_extra_style: |
+    text.label, text.footer {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      stroke: none !important;
+      paint-order: normal;
+    }
+    text.label { font-size: 15px; letter-spacing: 0.04em; }
+    text.footer { font-size: 11px; opacity: 0.55; font-weight: normal; }

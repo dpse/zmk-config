@@ -1,0 +1,45 @@
+name: Draw keymap
+
+on:
+  push:
+    paths:
+      - "config/corne_choc_pro.keymap"
+      - "boards/keebart/corne_choc_pro/corne_choc_pro-layouts.dtsi"
+      - "draw/keymap_drawer.config.yaml"
+      - "draw/generate.sh"
+      - ".github/workflows/draw-keymaps.yml"
+  workflow_dispatch:
+
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install keymap-drawer
+        run: pip install keymap-drawer
+
+      # generate.sh does the two non-obvious things: forces UTF-8 output, and
+      # rewrites the inferred "zmk_keyboard: corne_choc_pro" layout (which
+      # keymap-drawer cannot resolve for an out-of-tree board) to read the
+      # board's own physical-layout devicetree instead.
+      - name: Draw
+        run: ./draw/generate.sh
+
+      - name: Commit updated diagram
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add draw/corne_choc_pro.svg draw/corne_choc_pro.yaml
+          if git diff --staged --quiet; then
+            echo "diagram unchanged"
+          else
+            git commit -m "Redraw keymap diagram"
+            git push
+          fi

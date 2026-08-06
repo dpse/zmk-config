@@ -1,0 +1,346 @@
+layout: {qmk_info_json: draw/physical_layout.json, layout_name: LAYOUT}
+layers:
+  BASE:
+  - {t: AltGr, s: sticky}
+  - Q
+  - W
+  - E
+  - R
+  - T
+  - Y
+  - U
+  - I
+  - O
+  - P
+  - \
+  - ESC
+  - {t: A, h: LGUI}
+  - {t: S, h: LALT}
+  - {t: D, h: LSHFT}
+  - {t: F, h: LCTRL}
+  - {t: G, h: Meh}
+  - {t: H, h: Meh}
+  - {t: J, h: RCTRL}
+  - {t: K, h: RSHFT}
+  - {t: L, h: LALT}
+  - {t: ;, h: RGUI}
+  - ''''
+  - {t: Magic, h: Shift}
+  - Z
+  - X
+  - C
+  - V
+  - B
+  - N
+  - M
+  - ','
+  - .
+  - /
+  - DEL
+  - {t: ESC, h: MEDIA}
+  - {t: RET, h: NAV}
+  - {t: Tab, h: MOUSE, s: S-Tab}
+  - {t: BSPC, h: SYM}
+  - {t: SPACE, h: NUM}
+  - {t: DEL, h: FUN}
+  NAV:
+  - {t: ▽, type: trans}
+  - ''
+  - ''
+  - {t: Alt+Tab, s: swap}
+  - ''
+  - ''
+  - INS
+  - HOME
+  - UP
+  - END
+  - PG UP
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - LGUI
+  - LALT
+  - LSHFT
+  - LCTRL
+  - {t: NAV, h: toggle}
+  - Repeat
+  - LEFT
+  - DOWN
+  - RIGHT
+  - PG DN
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - TAB
+  - Ctl+Sft+TAB
+  - Ctl+TAB
+  - Alt+LEFT
+  - Alt+RIGHT
+  - Ctl+Sft+Z
+  - Ctl+V
+  - Ctl+C
+  - Ctl+X
+  - Ctl+Z
+  - {t: ▽, type: trans}
+  - ESC
+  - {type: held}
+  - {t: Tab, s: S-Tab}
+  - BSPC
+  - SPACE
+  - DEL
+  MOUSE:
+  - {t: ▽, type: trans}
+  - ''
+  - ''
+  - {t: Alt+Tab, s: swap}
+  - ''
+  - ''
+  - ''
+  - {t: Left, s: scroll}
+  - {t: Up, s: mouse}
+  - {t: Right, s: scroll}
+  - {t: Up, s: scroll}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - LGUI
+  - LALT
+  - LSHFT
+  - LCTRL
+  - {t: MOUSE, h: toggle}
+  - M Click
+  - {t: Left, s: mouse}
+  - {t: Down, s: mouse}
+  - {t: Right, s: mouse}
+  - {t: Down, s: scroll}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - TAB
+  - Ctl+Sft+TAB
+  - Ctl+TAB
+  - Alt+LEFT
+  - Alt+RIGHT
+  - Ctl+Sft+Z
+  - Ctl+V
+  - Ctl+C
+  - Ctl+X
+  - Ctl+Z
+  - {t: ▽, type: trans}
+  - ESC
+  - RET
+  - {type: held}
+  - R Click
+  - L Click
+  - DEL
+  MEDIA:
+  - ''
+  - {t: BT, h: '0'}
+  - {t: BT, h: '1'}
+  - {t: BT, h: '2'}
+  - {t: BT, h: '3'}
+  - OUT TOG
+  - ''
+  - ''
+  - VOL UP
+  - ''
+  - ''
+  - ''
+  - ''
+  - LGUI
+  - LALT
+  - LSHFT
+  - LCTRL
+  - {t: MEDIA, h: toggle}
+  - Leader
+  - PREV
+  - VOL DN
+  - NEXT
+  - ''
+  - ''
+  - ''
+  - {t: BT Clr, s: 2x}
+  - ''
+  - ''
+  - {t: Boot, s: 2x}
+  - {t: Reset, s: 2x}
+  - ''
+  - ''
+  - STOP
+  - ''
+  - ''
+  - ''
+  - {type: held}
+  - ''
+  - ''
+  - PP
+  - MUTE
+  - ''
+  NUM:
+  - {t: ▽, type: trans}
+  - '['
+  - '7'
+  - '8'
+  - '9'
+  - ']'
+  - '!='
+  - <=
+  - '>='
+  - =>
+  - ->
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - ;
+  - '4'
+  - '5'
+  - '6'
+  - '='
+  - {t: NUM, h: toggle}
+  - RCTRL
+  - RSHFT
+  - LALT
+  - RGUI
+  - RET
+  - {t: ▽, type: trans}
+  - '`'
+  - '1'
+  - '2'
+  - '3'
+  - \
+  - ''
+  - ''
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - ESC
+  - '0'
+  - {t: Tab, s: S-Tab}
+  - BSPC
+  - {type: held}
+  - DEL
+  SYM:
+  - {t: ▽, type: trans}
+  - '{'
+  - '&'
+  - '*'
+  - (
+  - '}'
+  - '!='
+  - <=
+  - '>='
+  - =>
+  - ->
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - ':'
+  - $
+  - '%'
+  - ^
+  - +
+  - {t: SYM, h: toggle}
+  - RCTRL
+  - RSHFT
+  - LALT
+  - RGUI
+  - RET
+  - {t: ▽, type: trans}
+  - '~'
+  - '!'
+  - '@'
+  - '#'
+  - '|'
+  - ''
+  - ''
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - ESC
+  - (
+  - )
+  - {type: held}
+  - SPACE
+  - DEL
+  FUN:
+  - KP NUM
+  - F12
+  - F7
+  - F8
+  - F9
+  - PSCRN
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - {t: ▽, type: trans}
+  - F11
+  - F4
+  - F5
+  - F6
+  - SLCK
+  - {t: FUN, h: toggle}
+  - RCTRL
+  - RSHFT
+  - LALT
+  - RGUI
+  - ''
+  - {t: ▽, type: trans}
+  - F10
+  - F1
+  - F2
+  - F3
+  - PAUSE BREAK
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - {t: ▽, type: trans}
+  - ESC
+  - RET
+  - {t: Tab, s: S-Tab}
+  - BSPC
+  - SPACE
+  - {type: held}
+combos:
+- p: [1, 2]
+  k: '['
+  l: [BASE]
+- p: [2, 3]
+  k: '{'
+  l: [BASE]
+- p: [3, 4]
+  k: (
+  l: [BASE]
+- p: [7, 8]
+  k: )
+  l: [BASE]
+- p: [8, 9]
+  k: '}'
+  l: [BASE]
+- p: [9, 10]
+  k: ']'
+  l: [BASE]
+- p: [15, 16]
+  k: BSPC
+  l: [BASE]
+- p: [19, 20]
+  k: ESC
+  l: [BASE]
+- p: [25, 26]
+  k: Ctl+Z
+  l: [BASE]
+- p: [26, 27]
+  k: Ctl+X
+  l: [BASE]
+- p: [27, 28]
+  k: Ctl+C
+  l: [BASE]
+- p: [28, 29]
+  k: Ctl+V
+  l: [BASE]
+- p: [37, 38]
+  k: {t: Caps, s: word}
+  l: [BASE]
+- p: [39, 40]
+  k: {t: Num, s: word}
+  l: [BASE]
