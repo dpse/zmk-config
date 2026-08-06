@@ -30,7 +30,7 @@ jobs:
       # keymap-drawer cannot resolve for an out-of-tree board) to read the
       # board's own physical-layout devicetree instead.
       - name: Draw
-        run: ./draw/generate.sh
+        run: bash draw/generate.sh
 
       - name: Commit updated diagram
         run: |
