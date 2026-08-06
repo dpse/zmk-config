@@ -1,7 +1,8 @@
 # zmk-config — Corne Choc Pro BT
 
 ZMK firmware for a [Keebart Corne Choc Pro BT](https://www.keebart.com/products/corne-wireless).
-Miryoku-derived layout, ported from a ZSA Voyager running QMK.
+[Miryoku](https://github.com/manna-harbour/miryoku)-derived layout, ported from
+a ZSA Voyager running QMK.
 
 ![keymap](draw/corne_choc_pro.svg)
 
@@ -24,7 +25,7 @@ west build -p -b corne_choc_pro_left/nrf52840/zmk -d build/left -- \
 `ZMK_EXTRA_MODULES` needs this repo (it supplies the board) plus every module
 in `config/west.yml`.
 
-Diagram: `./draw/generate.sh`, or the `draw-keymaps` workflow on push.
+Diagram: `bash draw/generate.sh`, or the `draw-keymaps` workflow on push.
 
 ## Notes
 
