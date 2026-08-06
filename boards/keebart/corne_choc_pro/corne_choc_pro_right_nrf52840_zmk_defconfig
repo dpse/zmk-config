@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: MIT
+
+# Enable MPU
+CONFIG_ARM_MPU=y
+
+# Enable GPIO
+CONFIG_GPIO=y
+CONFIG_PINCTRL=y
+
+# Enable writing to flash (settings storage)
+CONFIG_USE_DT_CODE_PARTITION=y
+CONFIG_MPU_ALLOW_FLASH_WRITE=y
+CONFIG_NVS=y
+CONFIG_SETTINGS_NVS=y
+CONFIG_FLASH=y
+CONFIG_FLASH_PAGE_LAYOUT=y
+CONFIG_FLASH_MAP=y
+
+# I2C for the MAX17048 fuel gauge
+CONFIG_I2C=y
+CONFIG_I2C_NRFX=y
+
+# SPI for the nice!view display
+CONFIG_SPI=y
+CONFIG_SPI_NRFX=y
+
+# Outputs
+CONFIG_ZMK_USB=y
+CONFIG_ZMK_BLE=y
+
+CONFIG_BUILD_OUTPUT_UF2=y
+
+# NOTE: RGB underglow hardware is present but left disabled; see
+# config/corne_choc_pro.conf.
