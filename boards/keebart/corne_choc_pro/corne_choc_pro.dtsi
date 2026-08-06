@@ -54,15 +54,13 @@
         >;
     };
 
-    /* This build has no rotary encoders fitted, so the EC11 nodes and the
-     * zmk,keymap-sensors node are omitted entirely. To add encoders later,
-     * copy the left_ex1/left_ex2/right_ex1/right_ex2 encoder nodes and the
-     * "sensors" node from the Keebart reference board, set status = "okay"
-     * on the side that has them, and add sensor-bindings to the keymap. */
+    /* No rotary encoders fitted: the EC11 nodes and the zmk,keymap-sensors
+     * node are omitted. To add them, copy the encoder nodes and the "sensors"
+     * node from the Keebart board, enable the side that has them, and add
+     * sensor-bindings to the keymap. */
 };
 
-/* Use the internal DC/DC converter rather than the LDO regulator.
- * Replaces the old HWMv1 CONFIG_BOARD_ENABLE_DCDC Kconfig option. */
+/* Use the internal DC/DC converter rather than the LDO regulator. */
 &reg1 {
     regulator-initial-mode = <NRF5X_REG_MODE_DCDC>;
 };
