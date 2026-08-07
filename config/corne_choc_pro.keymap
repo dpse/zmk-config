@@ -1,8 +1,7 @@
 /*
  * Corne Choc Pro BT - Miryoku-derived layout, ported from a ZSA Voyager (QMK).
  *
- * Physical key positions (46-key default_layout, 6 columns + 2 inner extras
- * per hand + 3 thumbs per hand):
+ * Physical key positions:
  *
  *    0   1   2   3   4   5   6  |  7   8   9  10  11  12  13
  *   14  15  16  17  18  19  20  | 21  22  23  24  25  26  27
@@ -18,16 +17,17 @@
  */
 
 #include <behaviors.dtsi>
-#include <behaviors/num_word.dtsi>   // requires the zmk-auto-layer module
+#include <behaviors/num_word.dtsi>   // zmk-auto-layer
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/outputs.h>
 
-/* Mouse speed. ZMK defaults to 600/10; these must be defined before
- * pointing.h, which bakes them into MOVE_UP / SCRL_UP etc. */
+/* Must precede pointing.h, which bakes these into MOVE_UP / SCRL_UP. */
 #define ZMK_POINTING_DEFAULT_MOVE_VAL 1800
 #define ZMK_POINTING_DEFAULT_SCRL_VAL 15
 #include <dt-bindings/zmk/pointing.h>
+
+#include <zmk-helpers/helper.h>
 
 #define BASE  0
 #define NAV   1
@@ -40,8 +40,6 @@
 /* Meh = Ctrl+Shift+Alt, on the inner index finger of each hand. */
 #define MEH LC(LS(LALT))
 
-/* Chordal-hold equivalent: a home row mod only resolves as a hold if the next
- * key is on the opposite hand (or a thumb). */
 #define KEYS_L  0  1  2  3  4  5  6 14 15 16 17 18 19 20 28 29 30 31 32 33
 #define KEYS_R  7  8  9 10 11 12 13 21 22 23 24 25 26 27 34 35 36 37 38 39
 #define THUMBS 40 41 42 43 44 45
@@ -61,10 +59,9 @@
     quick-tap-ms = <QUICK_TAP_MS>;
 };
 
-/* Mouse emulation. trigger-period-ms is the report rate, 8ms = 125Hz, and is
- * the main lever on how smooth movement feels.
- * acceleration-exponent: 0 = uniform speed, 1 = uniform acceleration,
- * 2 = uniform jerk. At 1 the speed ramps linearly to
+/* trigger-period-ms is the report rate, 8ms = 125Hz, and is the main lever on
+ * how smooth movement feels. acceleration-exponent: 0 = uniform speed,
+ * 1 = uniform acceleration, 2 = uniform jerk. At 1 the speed ramps linearly to
  * ZMK_POINTING_DEFAULT_MOVE_VAL over time-to-max-speed-ms, so the ceiling and
  * the ramp together decide how fast it feels; use 0 for full speed on press. */
 &mmv {
@@ -79,136 +76,80 @@
     time-to-max-speed-ms = <300>;
 };
 
+/* The operator macros emit EXCL, LT and GT. Without them here, typing != or
+ * <= drops num-word mid-expression. */
+&num_word {
+    continue-list = <BACKSPACE DELETE DOT COMMA PLUS MINUS STAR FSLH EQUAL EXCL LT GT>;
+};
+
 / {
     chosen {
         zmk,physical-layout = &default_layout;
     };
+};
 
+/* Home row mods, urob's "timeless" values. hold-trigger-key-positions limits
+ * holds to the opposite hand plus thumbs, so a same-hand roll always taps;
+ * hold-trigger-on-release defers the decision until the next key releases;
+ * require-prior-idle-ms suppresses holds mid-flow. */
+#define MAKE_HRM(NAME, TRIGGER_POS)                                            \
+    ZMK_HOLD_TAP(NAME, bindings = <&kp>, <&kp>; flavor = "balanced";           \
+                 tapping-term-ms = <280>; quick-tap-ms = <QUICK_TAP_MS>;       \
+                 require-prior-idle-ms = <150>; hold-trigger-on-release;       \
+                 hold-trigger-key-positions = <TRIGGER_POS>;)
+MAKE_HRM(hml, KEYS_R THUMBS)
+MAKE_HRM(hmr, KEYS_L THUMBS)
+
+/* Tap: Tab | double-tap: Shift+Tab. lt_tab adds hold: MOUSE. */
+ZMK_TAP_DANCE(tab_dance, tapping-term-ms = <200>; bindings = <&kp TAB>, <&kp LS(TAB)>;)
+ZMK_HOLD_TAP(lt_tab, bindings = <&mo>, <&tab_dance>; flavor = "balanced";
+             tapping-term-ms = <200>; quick-tap-ms = <QUICK_TAP_MS>;)
+
+/* Destructive keys, behind a double tap: a single tap does nothing.
+ * MEDIA is one thumb hold away, so these need the guard. */
+#define GUARDED(NAME, BINDING)                                                 \
+    ZMK_TAP_DANCE(NAME, tapping-term-ms = <300>; bindings = <&none>, <BINDING>;)
+GUARDED(td_boot,  &bootloader)
+GUARDED(td_reset, &sys_reset)
+GUARDED(td_btclr, &bt BT_CLR)
+
+/* Alt-Tab swapper. Holds Alt across repeated Tabs. The module only ends on
+ * layer *activation*, never deactivation, so releasing the NAV thumb would
+ * otherwise leave Alt held indefinitely - hence timeout-ms.
+ * ignored-key-positions are the keys that may be pressed without committing:
+ * 3 (the swapper itself), 17 (Shift, for Shift+Tab) and 23-25 (the arrows). */
+ZMK_TRI_STATE(swapper, bindings = <&kt LALT>, <&kp TAB>, <&kt LALT>;
+              ignored-key-positions = <3 17 23 24 25>;
+              ignored-layers = <NAV MOUSE>; timeout-ms = <1500>;)
+
+/*
+ * Magic shift. One key, four jobs:
+ *   hold                     -> Shift
+ *   tap right after a letter -> repeat the last key
+ *   tap otherwise            -> sticky Shift
+ *   Shift + tap / double tap -> Caps Word
+ *
+ * Double tap is not coded: the first tap leaves a sticky Shift active, so the
+ * second tap sees Shift held and the mod-morph sends Caps Word. Caps Word is
+ * also on the left-thumb combo.
+ */
+ZMK_ADAPTIVE_KEY(shift_repeat, bindings = <&sk LSHFT>;
+    repeat {
+        trigger-keys = <A B C D E F G H I J K L M N O P Q R S T U V W X Y Z>;
+        bindings = <&key_repeat>;
+        max-prior-idle-ms = <1200>;
+        strict-modifiers;
+    };)
+ZMK_MOD_MORPH(magic_shift_tap, bindings = <&shift_repeat>, <&caps_word>;
+              mods = <(MOD_LSFT)>;)
+ZMK_HOLD_TAP(magic_shift, bindings = <&kp>, <&magic_shift_tap>;
+             flavor = "balanced"; tapping-term-ms = <200>;
+             quick-tap-ms = <QUICK_TAP_MS>;)
+
+/* Leader. Written out rather than via ZMK_LEADER_SEQUENCE, whose macro targets
+ * the unmerged zmk,leader-sequences implementation rather than this module. */
+/ {
     behaviors {
-        /* Home row mods, urob's "timeless" values. hold-trigger-key-positions
-         * limits holds to the opposite hand plus thumbs, so a same-hand roll
-         * always taps; hold-trigger-on-release defers the decision until the
-         * next key releases; require-prior-idle-ms suppresses holds mid-flow. */
-        hml: home_row_mod_left {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "balanced";
-            tapping-term-ms = <280>;
-            quick-tap-ms = <QUICK_TAP_MS>;
-            require-prior-idle-ms = <150>;
-            hold-trigger-key-positions = <KEYS_R THUMBS>;
-            hold-trigger-on-release;
-            bindings = <&kp>, <&kp>;
-        };
-
-        hmr: home_row_mod_right {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "balanced";
-            tapping-term-ms = <280>;
-            quick-tap-ms = <QUICK_TAP_MS>;
-            require-prior-idle-ms = <150>;
-            hold-trigger-key-positions = <KEYS_L THUMBS>;
-            hold-trigger-on-release;
-            bindings = <&kp>, <&kp>;
-        };
-
-        /* Tap: Tab | double-tap: Shift+Tab. */
-        tab_dance: tab_dance {
-            compatible = "zmk,behavior-tap-dance";
-            #binding-cells = <0>;
-            tapping-term-ms = <200>;
-            bindings = <&kp TAB>, <&kp LS(TAB)>;
-        };
-
-        /* Hold: MOUSE layer | tap: the Tab tap-dance above. */
-        lt_tab: layer_tap_tab {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "balanced";
-            tapping-term-ms = <200>;
-            quick-tap-ms = <QUICK_TAP_MS>;
-            bindings = <&mo>, <&tab_dance>;
-        };
-
-        /* Destructive keys, behind a double tap: a single tap does nothing.
-         * MEDIA is one thumb hold away, so these need the guard. */
-        td_boot: td_bootloader {
-            compatible = "zmk,behavior-tap-dance";
-            #binding-cells = <0>;
-            tapping-term-ms = <300>;
-            bindings = <&none>, <&bootloader>;
-        };
-
-        td_reset: td_sys_reset {
-            compatible = "zmk,behavior-tap-dance";
-            #binding-cells = <0>;
-            tapping-term-ms = <300>;
-            bindings = <&none>, <&sys_reset>;
-        };
-
-        td_btclr: td_bt_clear {
-            compatible = "zmk,behavior-tap-dance";
-            #binding-cells = <0>;
-            tapping-term-ms = <300>;
-            bindings = <&none>, <&bt BT_CLR>;
-        };
-
-        /* Alt-Tab swapper. Holds Alt across repeated Tabs and releases it only
-         * on leaving the layer or pressing a key outside ignored-key-positions.
-         * Those are 3 (the swapper itself, so repeat taps do not cancel it) and
-         * 17 (Shift on NAV/MOUSE, so Shift+Tab walks backwards). */
-        swapper: swapper {
-            compatible = "zmk,behavior-tri-state";
-            #binding-cells = <0>;
-            bindings = <&kt LALT>, <&kp TAB>, <&kt LALT>;
-            ignored-key-positions = <3 17>;
-            ignored-layers = <NAV MOUSE>;
-        };
-
-        /*
-         * Magic shift. One key, four jobs:
-         *   hold                     -> Shift
-         *   tap right after a letter -> repeat the last key
-         *   tap otherwise            -> sticky Shift
-         *   Shift + tap / double tap -> Caps Word
-         *
-         * Double tap is not coded: the first tap leaves a sticky Shift active,
-         * so the second tap sees Shift held and the mod-morph sends Caps Word.
-         * Caps Word is also on the left-thumb combo.
-         */
-        shift_repeat: shift_repeat {
-            compatible = "zmk,behavior-adaptive-key";
-            #binding-cells = <0>;
-            bindings = <&sk LSHFT>;
-
-            repeat {
-                trigger-keys = <A B C D E F G H I J K L M N O P Q R S T U V W X Y Z>;
-                bindings = <&key_repeat>;
-                max-prior-idle-ms = <1200>;
-                strict-modifiers;
-            };
-        };
-
-        magic_shift_tap: magic_shift_tap {
-            compatible = "zmk,behavior-mod-morph";
-            #binding-cells = <0>;
-            bindings = <&shift_repeat>, <&caps_word>;
-            mods = <(MOD_LSFT)>;
-        };
-
-        magic_shift: magic_shift {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "balanced";
-            tapping-term-ms = <200>;
-            quick-tap-ms = <QUICK_TAP_MS>;
-            bindings = <&kp>, <&magic_shift_tap>;
-        };
-
-        /* Leader key (zmk-leader-key). Tap it, release, then type a sequence.
-         * Lives on MEDIA, which is already the system layer, so the sequences
-         * are all system actions. */
         leader: leader {
             compatible = "zmk,behavior-leader-key";
             #binding-cells = <0>;
@@ -218,246 +159,208 @@
             lead_usb   { sequence = <U S B>;     bindings = <&out OUT_USB>; };
             lead_boot  { sequence = <B O O T>;   bindings = <&bootloader>; };
             lead_reset { sequence = <R E S E T>; bindings = <&sys_reset>; };
-        };
-    };
 
-    macros {
-        /* Operator row, on the hand opposite the held layer thumb. */
-        neq: macro_neq {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <5>;
-            bindings = <&kp EXCL &kp EQUAL>;
-        };
+            /* Punctuation and maths. Single letters, avoiding B, U and R,
+             * which are prefixes of the system sequences above. */
+            lead_endash { sequence = <N>; bindings = <&c_endash>; };
+            lead_emdash { sequence = <M>; bindings = <&c_emdash>; };
+            lead_deg    { sequence = <D>; bindings = <&c_deg>; };
+            lead_times  { sequence = <X>; bindings = <&c_times>; };
+            lead_div    { sequence = <V>; bindings = <&c_div>; };
+            lead_pm     { sequence = <P>; bindings = <&c_pm>; };
+            lead_ellip  { sequence = <DOT>; bindings = <&c_ellip>; };
+            lead_bullet { sequence = <O>; bindings = <&c_bullet>; };
+            lead_euro   { sequence = <E>; bindings = <&c_euro>; };
+            lead_sect   { sequence = <S>; bindings = <&c_sect>; };
+            lead_copy   { sequence = <C>; bindings = <&c_copy>; };
+            lead_tm     { sequence = <T>; bindings = <&c_tm>; };
+            lead_sup2   { sequence = <N2>; bindings = <&c_sup2>; };
+            lead_sup3   { sequence = <N3>; bindings = <&c_sup3>; };
+            lead_half   { sequence = <H>; bindings = <&c_half>; };
 
-        lte: macro_lte {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <5>;
-            bindings = <&kp LT &kp EQUAL>;
-        };
+            /* Arrows: leader a + direction. Relations: leader k + mnemonic. */
+            lead_right  { sequence = <A R>; bindings = <&c_right>; };
+            lead_left   { sequence = <A L>; bindings = <&c_left>; };
+            lead_up     { sequence = <A U>; bindings = <&c_up>; };
+            lead_down   { sequence = <A D>; bindings = <&c_down>; };
+            lead_impl   { sequence = <A I>; bindings = <&c_implies>; };
+            lead_ne     { sequence = <K N>; bindings = <&c_ne>; };
+            lead_le     { sequence = <K L>; bindings = <&c_le>; };
+            lead_ge     { sequence = <K G>; bindings = <&c_ge>; };
+            lead_approx { sequence = <K A>; bindings = <&c_approx>; };
+            lead_sqrt   { sequence = <Q>;   bindings = <&c_sqrt>; };
+            lead_inf    { sequence = <I>;   bindings = <&c_inf>; };
 
-        gte: macro_gte {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <5>;
-            bindings = <&kp GT &kp EQUAL>;
-        };
-
-        fatarrow: macro_fatarrow {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <5>;
-            bindings = <&kp EQUAL &kp GT>;
-        };
-
-        arrow: macro_arrow {
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <5>;
-            bindings = <&kp MINUS &kp GT>;
-        };
-    };
-
-    /*
-     * All combos are scoped to BASE. ZMK tests a combo against the *highest*
-     * active layer, so listing BASE suppresses them whenever a sub-layer is
-     * held - without it the clipboard combos would fire on NAV/MOUSE, where
-     * those positions carry the browser row.
-     *
-     * require-prior-idle-ms is split by misfire risk: the top-row bracket
-     * combos sit on common digraphs (we, er, ui, io, op) and need the
-     * protection, while the home-row and clipboard ones sit on rare digraphs
-     * (df, jk, zx, xc, cv, vb) and are set low so they stay responsive right
-     * after a keystroke - which is when you reach for backspace or escape.
-     */
-    combos {
-        compatible = "zmk,combos";
-
-        /* Brackets and parens, row 0 -------------------------------------- */
-        combo_lbkt {          /* Q + W -> [ */
-            key-positions = <1 2>;
-            bindings = <&kp LBKT>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <150>;
-            layers = <BASE>;
-        };
-        combo_lbrc {          /* W + E -> { */
-            key-positions = <2 3>;
-            bindings = <&kp LBRC>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <150>;
-            layers = <BASE>;
-        };
-        combo_lpar {          /* E + R -> ( */
-            key-positions = <3 4>;
-            bindings = <&kp LPAR>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <150>;
-            layers = <BASE>;
-        };
-        combo_rpar {          /* U + I -> ) */
-            key-positions = <9 10>;
-            bindings = <&kp RPAR>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <150>;
-            layers = <BASE>;
-        };
-        combo_rbrc {          /* I + O -> } */
-            key-positions = <10 11>;
-            bindings = <&kp RBRC>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <150>;
-            layers = <BASE>;
-        };
-        combo_rbkt {          /* O + P -> ] */
-            key-positions = <11 12>;
-            bindings = <&kp RBKT>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <150>;
-            layers = <BASE>;
-        };
-
-        /* Home row -------------------------------------------------------- */
-        combo_bspc {          /* D + F -> Backspace */
-            key-positions = <17 18>;
-            bindings = <&kp BSPC>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <50>;
-            layers = <BASE>;
-        };
-        combo_esc {           /* J + K -> Escape */
-            key-positions = <23 24>;
-            bindings = <&kp ESC>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <50>;
-            layers = <BASE>;
-        };
-        /* Clipboard, mirroring Z X C V ------------------------------------ */
-        combo_undo {          /* Z + X -> Undo */
-            key-positions = <29 30>;
-            bindings = <&kp LC(Z)>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <50>;
-            layers = <BASE>;
-        };
-        combo_cut {           /* X + C -> Cut */
-            key-positions = <30 31>;
-            bindings = <&kp LC(X)>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <50>;
-            layers = <BASE>;
-        };
-        combo_copy {          /* C + V -> Copy */
-            key-positions = <31 32>;
-            bindings = <&kp LC(C)>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <50>;
-            layers = <BASE>;
-        };
-        combo_paste {         /* V + B -> Paste */
-            key-positions = <32 33>;
-            bindings = <&kp LC(V)>;
-            timeout-ms = <50>;
-            require-prior-idle-ms = <50>;
-            layers = <BASE>;
-        };
-
-        /* Word modes, one thumb pair each. Both stay active for a "word" and
-         * cancel themselves on the first key that does not belong to it, so
-         * neither needs holding or an exit key. No require-prior-idle-ms:
-         * these are reached mid-sentence, right after a keystroke. The tight
-         * 40ms window keeps a roll between two thumbs from misfiring. */
-        combo_caps_word {     /* both left thumbs  -> caps-word */
-            key-positions = <41 42>;
-            bindings = <&caps_word>;
-            timeout-ms = <40>;
-            layers = <BASE>;
-        };
-        combo_num_word {      /* both right thumbs -> num-word */
-            key-positions = <43 44>;
-            bindings = <&num_word NUM>;
-            timeout-ms = <40>;
-            layers = <BASE>;
-        };
-    };
-
-    keymap {
-        compatible = "zmk,keymap";
-
-        base_layer {
-            display-name = "BASE";
-            bindings = <
-&sk RALT    &kp Q        &kp W        &kp E         &kp R         &kp T         &none      &none  &kp Y       &kp U         &kp I         &kp O        &kp P           &kp BSLH
-&kp ESC     &hml LGUI A  &hml LALT S  &hml LSHFT D  &hml LCTRL F  &hml MEH G    &none      &none  &hmr MEH H  &hmr RCTRL J  &hmr RSHFT K  &hmr LALT L  &hmr RGUI SEMI  &kp SQT
-&magic_shift LSHFT 0  &kp Z  &kp X   &kp C         &kp V         &kp B                           &kp N       &kp M         &kp COMMA     &kp DOT      &kp FSLH        &kp DEL
-                                      &lt MEDIA ESC &lt NAV RET   &lt_tab MOUSE 0                 &lt SYM BSPC  &lt NUM SPACE  &lt FUN DEL
-            >;
-        };
-
-        nav_layer {
-            display-name = "NAV";
-            bindings = <
-&trans   &none      &none      &swapper    &none       &none          &none  &none  &kp INS       &kp HOME   &kp UP     &kp END    &kp PG_UP  &trans
-&trans   &kp LGUI   &kp LALT   &kp LSHFT   &kp LCTRL   &tog NAV       &none  &none  &key_repeat   &kp LEFT   &kp DOWN   &kp RIGHT  &kp PG_DN  &trans
-&trans   &kp TAB    &kp LC(LS(TAB))  &kp LC(TAB)  &kp LA(LEFT)  &kp LA(RIGHT)      &kp LC(LS(Z)) &kp LC(V)  &kp LC(C)  &kp LC(X)  &kp LC(Z)  &trans
-                                      &kp ESC   &trans     &tab_dance          &kp BSPC   &kp SPACE   &kp DEL
-            >;
-        };
-
-        mouse_layer {
-            display-name = "MOUSE";
-            bindings = <
-&trans   &none      &none      &swapper    &none       &none          &none  &none  &none         &msc SCRL_LEFT  &mmv MOVE_UP    &msc SCRL_RIGHT  &msc SCRL_UP    &trans
-&trans   &kp LGUI   &kp LALT   &kp LSHFT   &kp LCTRL   &tog MOUSE     &none  &none  &mkp MCLK     &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_RIGHT  &msc SCRL_DOWN  &trans
-&trans   &kp TAB    &kp LC(LS(TAB))  &kp LC(TAB)  &kp LA(LEFT)  &kp LA(RIGHT)      &kp LC(LS(Z)) &kp LC(V)       &kp LC(C)       &kp LC(X)        &kp LC(Z)       &trans
-                                      &kp ESC   &kp RET    &trans              &mkp RCLK  &mkp LCLK   &kp DEL
-            >;
-        };
-
-        media_layer {
-            display-name = "MEDIA";
-            bindings = <
-&none      &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &out OUT_TOG  &none  &none  &none  &none        &kp C_VOL_UP  &none        &none  &none
-&none      &kp LGUI      &kp LALT      &kp LSHFT     &kp LCTRL     &tog MEDIA    &none  &none  &leader &kp C_PREV  &kp C_VOL_DN  &kp C_NEXT   &none  &none
-&none      &td_btclr     &none         &none         &td_boot      &td_reset                   &none  &none        &kp C_STOP    &none        &none  &none
-                                      &trans    &none      &none               &kp C_PP   &kp C_MUTE  &none
-            >;
-        };
-
-        num_layer {
-            display-name = "NUM";
-            bindings = <
-&trans   &kp LBKT   &kp N7   &kp N8   &kp N9   &kp RBKT    &none  &none  &neq       &lte        &gte        &fatarrow  &arrow    &trans
-&trans   &kp SEMI   &kp N4   &kp N5   &kp N6   &kp EQUAL   &none  &none  &tog NUM   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &kp RET
-&trans   &kp GRAVE  &kp N1   &kp N2   &kp N3   &kp BSLH                  &none      &none       &trans      &trans     &trans    &trans
-                                      &kp ESC   &kp N0     &tab_dance          &kp BSPC   &trans      &kp DEL
-            >;
-        };
-
-        sym_layer {
-            display-name = "SYM";
-            bindings = <
-&trans   &kp LBRC   &kp AMPS   &kp ASTRK  &kp LPAR   &kp RBRC   &none  &none  &neq       &lte        &gte        &fatarrow  &arrow    &trans
-&trans   &kp COLON  &kp DLLR   &kp PRCNT  &kp CARET  &kp PLUS   &none  &none  &tog SYM   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &kp RET
-&trans   &kp TILDE  &kp EXCL   &kp AT     &kp HASH   &kp PIPE                 &none      &none       &trans      &trans     &trans    &trans
-                                      &kp ESC   &kp LPAR   &kp RPAR            &trans     &kp SPACE   &kp DEL
-            >;
-        };
-
-        fun_layer {
-            display-name = "FUN";
-            bindings = <
-&kp KP_NUM &kp F12 &kp F7   &kp F8   &kp F9   &kp PSCRN         &none       &none  &none      &none       &none       &none      &none     &none
-&trans   &kp F11   &kp F4   &kp F5   &kp F6   &kp SLCK          &none       &none  &tog FUN   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &none
-&trans   &kp F10   &kp F1   &kp F2   &kp F3   &kp PAUSE_BREAK                      &none      &none       &none       &none      &none     &trans
-                                      &kp ESC   &kp RET    &tab_dance          &kp BSPC   &kp SPACE   &trans
-            >;
+            /* Greek: leader g <letter>. */
+            lead_alpha  { sequence = <G A>; bindings = <&c_alpha>; };
+            lead_beta   { sequence = <G B>; bindings = <&c_beta>; };
+            lead_gamma  { sequence = <G G>; bindings = <&c_gamma>; };
+            lead_delta  { sequence = <G D>; bindings = <&c_delta>; };
+            lead_eps    { sequence = <G E>; bindings = <&c_eps>; };
+            lead_theta  { sequence = <G H>; bindings = <&c_theta>; };
+            lead_lambda { sequence = <G L>; bindings = <&c_lambda>; };
+            lead_mu     { sequence = <G M>; bindings = <&c_mu>; };
+            lead_pi     { sequence = <G P>; bindings = <&c_pi>; };
+            lead_sigma  { sequence = <G S>; bindings = <&c_sigma>; };
+            lead_phi    { sequence = <G F>; bindings = <&c_phi>; };
+            lead_omega  { sequence = <G W>; bindings = <&c_omega>; };
         };
     };
 };
+
+/* Operator row, on the hand opposite the held layer thumb. */
+#define OP(NAME, KEYS) ZMK_MACRO(NAME, wait-ms = <0>; tap-ms = <5>; bindings = <KEYS>;)
+OP(neq,      &kp EXCL  &kp EQUAL)
+OP(lte,      &kp LT    &kp EQUAL)
+OP(gte,      &kp GT    &kp EQUAL)
+OP(fatarrow, &kp EQUAL &kp GT)
+OP(arrow,    &kp MINUS &kp GT)
+
+/* Compose sequences, reached through the leader key.
+ *
+ * AltGr is the OS Level-3 chooser for a-ring / a-diaeresis / o-diaeresis, which
+ * are daily and want a single chord, so compose lives on Menu instead. The two
+ * cannot share a key: AltGr is either a modifier or Multi_key, not both.
+ *
+ * Compose is tapped, not held - it needs press-and-release before the sequence
+ * keys. Change COMPOSE_KEY if you bind compose somewhere else.
+ *
+ * These are shortcuts, not a requirement: any compose sequence can still be
+ * typed by hand. Add more by following the same pattern. */
+#define COMPOSE_KEY &kp K_APP
+
+#define COMPOSE(NAME, KEYS)                                                        ZMK_MACRO(NAME, wait-ms = <10>; tap-ms = <10>; bindings = <COMPOSE_KEY KEYS>;)
+
+COMPOSE(c_endash, &kp MINUS &kp MINUS &kp DOT)     // en dash
+COMPOSE(c_emdash, &kp MINUS &kp MINUS &kp MINUS)   // em dash
+COMPOSE(c_deg,    &kp O     &kp O)                 // degree
+COMPOSE(c_times,  &kp X     &kp X)                 // multiplication sign
+COMPOSE(c_div,    &kp COLON &kp MINUS)             // division sign
+COMPOSE(c_pm,     &kp PLUS  &kp MINUS)             // plus-minus
+COMPOSE(c_ellip,  &kp DOT   &kp DOT)               // ellipsis
+COMPOSE(c_bullet, &kp DOT   &kp EQUAL)             // bullet
+COMPOSE(c_euro,   &kp E     &kp EQUAL)             // euro
+COMPOSE(c_sect,   &kp S     &kp O)                 // section
+COMPOSE(c_copy,   &kp O     &kp C)                 // copyright
+COMPOSE(c_tm,     &kp T     &kp M)                 // trademark
+COMPOSE(c_sup2,   &kp CARET &kp N2)                // superscript two
+COMPOSE(c_sup3,   &kp CARET &kp N3)                // superscript three
+COMPOSE(c_half,   &kp N1    &kp N2)                // one half
+
+/* Arrows and relations. All from the Xorg base table, and the dead-key-free
+ * variant is used where the table offers a choice, so these work on a stock
+ * system with no ~/.XCompose. */
+COMPOSE(c_right,   &kp MINUS &kp GT)               // rightwards arrow
+COMPOSE(c_left,    &kp LT    &kp MINUS)            // leftwards arrow
+COMPOSE(c_up,      &kp PIPE  &kp CARET)            // upwards arrow
+COMPOSE(c_down,    &kp PIPE  &kp V)                // downwards arrow
+COMPOSE(c_implies, &kp EQUAL &kp GT)               // rightwards double arrow
+COMPOSE(c_ne,      &kp FSLH  &kp EQUAL)            // not equal to
+COMPOSE(c_le,      &kp LT    &kp EQUAL)            // less-than or equal to
+COMPOSE(c_ge,      &kp GT    &kp EQUAL)            // greater-than or equal to
+COMPOSE(c_approx,  &kp TILDE &kp TILDE)            // almost equal to
+COMPOSE(c_sqrt,    &kp V     &kp FSLH)             // square root
+COMPOSE(c_inf,     &kp N8    &kp N8)               // infinity
+
+/* Greek, via the compose table's asterisk prefix. */
+#define GREEK(NAME, LETTER) COMPOSE(NAME, &kp ASTRK &kp LETTER)
+GREEK(c_alpha, A)
+GREEK(c_beta,  B)
+GREEK(c_gamma, G)
+GREEK(c_delta, D)
+GREEK(c_eps,   E)
+GREEK(c_theta, H)
+GREEK(c_lambda, L)
+GREEK(c_mu,    M)
+GREEK(c_pi,    P)
+GREEK(c_sigma, S)
+GREEK(c_phi,   F)
+GREEK(c_omega, W)
+
+/*
+ * ZMK_COMBO(name, bindings, positions, layers, timeout, prior-idle).
+ *
+ * All are scoped to BASE. ZMK tests a combo against the *highest* active
+ * layer, so listing BASE suppresses them whenever a sub-layer is held -
+ * without it the clipboard combos would fire on NAV/MOUSE, where those
+ * positions carry the browser row.
+ *
+ * prior-idle is split by misfire risk: the top-row bracket combos sit on
+ * common digraphs (we, er, ui, io, op) and need the protection, while the
+ * home-row and clipboard ones sit on rare digraphs (df, jk, zx, xc, cv, vb)
+ * and are set low so they stay responsive right after a keystroke - which is
+ * when you reach for backspace or escape. The word modes take a tight window
+ * instead, so a roll between two thumbs cannot misfire.
+ */
+ZMK_COMBO(lbkt, &kp LBKT, 1 2, BASE, 50, 150)                             // Q + W -> [
+ZMK_COMBO(lbrc, &kp LBRC, 2 3, BASE, 50, 150)                             // W + E -> {
+ZMK_COMBO(lpar, &kp LPAR, 3 4, BASE, 50, 150)                             // E + R -> (
+ZMK_COMBO(rpar, &kp RPAR, 9 10, BASE, 50, 150)                            // U + I -> )
+ZMK_COMBO(rbrc, &kp RBRC, 10 11, BASE, 50, 150)                           // I + O -> }
+ZMK_COMBO(rbkt, &kp RBKT, 11 12, BASE, 50, 150)                           // O + P -> ]
+ZMK_COMBO(fatarrow, &fatarrow, 36 37, BASE, 50, 150)                      // , + . -> =>
+ZMK_COMBO(bspc, &kp BSPC, 17 18, BASE, 50, 50)                            // D + F -> Backspace
+ZMK_COMBO(esc, &kp ESC, 23 24, BASE, 50, 50)                              // J + K -> Escape
+ZMK_COMBO(undo, &kp LC(Z), 29 30, BASE, 50, 50)                           // Z + X -> Undo
+ZMK_COMBO(cut, &kp LC(X), 30 31, BASE, 50, 50)                            // X + C -> Cut
+ZMK_COMBO(copy, &kp LC(C), 31 32, BASE, 50, 50)                           // C + V -> Copy
+ZMK_COMBO(paste, &kp LC(V), 32 33, BASE, 50, 50)                          // V + B -> Paste
+ZMK_COMBO(caps_word, &caps_word, 41 42, BASE, 40, 0)                      // both left thumbs  -> caps-word
+ZMK_COMBO(num_word, &num_word NUM, 43 44, BASE, 40, 0)                    // both right thumbs -> num-word
+
+ZMK_LAYER(Base,
+
+&sk RALT    &kp Q        &kp W        &kp E         &kp R         &kp T         &none      &none  &kp Y       &kp U         &kp I         &kp O        &kp P           &kp BSLH
+&kp ESC     &hml LGUI A  &hml LALT S  &hml LSHFT D  &hml LCTRL F  &hml MEH G    &none      &none  &hmr MEH H  &hmr RCTRL J  &hmr RSHFT K  &hmr LALT L  &hmr RGUI SEMI  &kp SQT
+&magic_shift LSHFT 0  &kp Z  &kp X   &kp C         &kp V         &kp B                           &kp N       &kp M         &kp COMMA     &kp DOT      &kp FSLH        &leader
+                                      &lt MEDIA ESC &lt NAV RET   &lt_tab MOUSE 0                 &lt SYM BSPC  &lt NUM SPACE  &lt FUN DEL
+)
+
+ZMK_LAYER(Nav,
+
+&trans   &none      &none      &swapper    &none       &none          &none  &none  &kp INS       &kp HOME   &kp UP     &kp END    &kp PG_UP  &trans
+&trans   &kp LGUI   &kp LALT   &kp LSHFT   &kp LCTRL   &tog NAV       &none  &none  &kp K_APP     &kp LEFT   &kp DOWN   &kp RIGHT  &kp PG_DN  &trans
+&trans   &tab_dance &kp LA(LEFT)     &kp LA(RIGHT) &kp LC(LS(TAB)) &kp LC(TAB)      &kp LC(LS(Z)) &kp LC(V)  &kp LC(C)  &kp LC(X)  &kp LC(Z)  &trans
+                                      &kp ESC   &trans     &tab_dance          &kp BSPC   &kp SPACE   &kp DEL
+)
+
+ZMK_LAYER(Mouse,
+
+&trans   &none      &none      &swapper    &none       &none          &none  &none  &mkp MCLK     &msc SCRL_LEFT  &mmv MOVE_UP    &msc SCRL_RIGHT  &msc SCRL_UP    &trans
+&trans   &kp LGUI   &kp LALT   &kp LSHFT   &kp LCTRL   &tog MOUSE     &none  &none  &kp K_APP     &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_RIGHT  &msc SCRL_DOWN  &trans
+&trans   &tab_dance &kp LA(LEFT)     &kp LA(RIGHT) &kp LC(LS(TAB)) &kp LC(TAB)      &kp LC(LS(Z)) &kp LC(V)       &kp LC(C)       &kp LC(X)        &kp LC(Z)       &trans
+                                      &kp ESC   &kp RET    &trans              &mkp RCLK  &mkp LCLK   &kp DEL
+)
+
+ZMK_LAYER(Media,
+
+&none      &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &out OUT_TOG  &none  &none  &none  &none        &kp C_VOL_UP  &none        &none  &none
+&none      &kp LGUI      &kp LALT      &kp LSHFT     &kp LCTRL     &tog MEDIA    &none  &none  &none   &kp C_PREV  &kp C_VOL_DN  &kp C_NEXT   &none  &none
+&none      &td_btclr     &none         &none         &td_boot      &td_reset                   &none  &kp C_RW     &kp C_STOP    &kp C_FF     &none  &none
+                                      &trans    &none      &none               &kp C_PP   &kp C_MUTE  &none
+)
+
+ZMK_LAYER(Num,
+
+&trans   &kp LBKT   &kp N7   &kp N8   &kp N9   &kp RBKT    &none  &none  &neq       &lte        &gte        &fatarrow  &arrow    &trans
+&kp MINUS &kp SEMI  &kp N4   &kp N5   &kp N6   &kp EQUAL   &none  &none  &tog NUM   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &kp RET
+&trans   &kp GRAVE  &kp N1   &kp N2   &kp N3   &kp BSLH                  &none      &none       &trans      &trans     &trans    &trans
+                                      &kp ESC   &kp N0     &tab_dance          &kp BSPC   &trans      &kp DEL
+)
+
+ZMK_LAYER(Sym,
+
+&trans   &kp LBRC   &kp AMPS   &kp ASTRK  &kp LPAR   &kp RBRC   &none  &none  &neq       &lte        &gte        &fatarrow  &arrow    &trans
+&kp UNDER &kp COLON &kp DLLR   &kp PRCNT  &kp CARET  &kp PLUS   &none  &none  &tog SYM   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &kp RET
+&trans   &kp TILDE  &kp EXCL   &kp AT     &kp HASH   &kp PIPE                 &none      &none       &trans      &trans     &trans    &trans
+                                      &kp ESC   &kp LPAR   &kp RPAR            &trans     &kp SPACE   &kp DEL
+)
+
+ZMK_LAYER(Fun,
+
+&sk RALT &kp F12   &kp F7   &kp F8   &kp F9   &kp PSCRN         &none       &none  &none      &none       &none       &none      &none     &none
+&kp ESC  &kp F11   &kp F4   &kp F5   &kp F6   &kp SLCK          &none       &none  &tog FUN   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &none
+&kp KP_NUM &kp F10 &kp F1   &kp F2   &kp F3   &kp PAUSE_BREAK                      &none      &none       &none       &none      &none     &trans
+                                      &kp ESC   &kp RET    &tab_dance          &kp BSPC   &kp SPACE   &trans
+)
+
