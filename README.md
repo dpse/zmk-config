@@ -32,3 +32,20 @@ Diagram: `bash draw/generate.sh`, or the `draw-keymaps` workflow on push.
   board definition.
 - RGB underglow hardware is described in the board `.dts` and left disabled in
   `config/corne_choc_pro.conf`, for battery life.
+
+## Credits
+
+Built on [urob](https://github.com/urob)'s work — the
+[zmk-config](https://github.com/urob/zmk-config) it draws its home row mod
+timings from, and the modules it depends on:
+
+| | |
+|---|---|
+| [zmk-helpers](https://github.com/urob/zmk-helpers) | the `ZMK_COMBO` / `ZMK_HOLD_TAP` / `ZMK_LAYER` macros this keymap is written in |
+| [zmk-auto-layer](https://github.com/urob/zmk-auto-layer) | num-word |
+| [zmk-leader-key](https://github.com/urob/zmk-leader-key) | leader sequences |
+| [zmk-tri-state](https://github.com/urob/zmk-tri-state) | Alt-Tab swapper |
+| [zmk-adaptive-key](https://github.com/urob/zmk-adaptive-key) | magic shift |
+
+Also [caksoylar/keymap-drawer](https://github.com/caksoylar/keymap-drawer) for
+the diagram.
