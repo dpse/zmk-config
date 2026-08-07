@@ -12,16 +12,11 @@ manifest:
       import: app/west.yml
 
     # --- urob's ZMK modules -------------------------------------------------
-    # zmk-helpers    - ZMK_LEADER_SEQUENCE and other convenience macros
-    # zmk-auto-layer - num-word: number layer that cancels itself
-    # zmk-leader-key - &leader sequences
-    # zmk-tri-state  - alt-tab swapper (hold Alt across repeated Tabs)
-    #
+    # zmk-helpers      - ZMK_COMBO / ZMK_HOLD_TAP / ZMK_LAYER convenience macros
+    # zmk-auto-layer   - num-word: number layer that cancels itself
+    # zmk-leader-key   - &leader sequences
+    # zmk-tri-state    - alt-tab swapper, holds Alt across repeated Tabs
     # zmk-adaptive-key - context-dependent keys; drives magic-shift
-    #
-    # NOT enabled:
-    #   zmk-unicode - only works in GTK apps on niri without IBus, and the
-    #                 XKB AltGr layout already covers a/o/a everywhere.
     - name: zmk-helpers
       remote: urob
       revision: main
