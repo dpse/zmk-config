@@ -13,6 +13,8 @@ parse_config:
   raw_binding_map:
     "&swapper": {t: "Alt+Tab", s: "swap"}
     "&leader": {t: "Leader"}
+    # Menu is bound to Multi_key in the OS, so this starts a compose sequence.
+    "&kp K_APP": {t: "Compose"}
     "&key_repeat": {t: "Repeat"}
     "&tab_dance": {t: "Tab", s: "S-Tab"}
     "&num_word NUM": {t: "Num", s: "word"}

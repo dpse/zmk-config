@@ -62,7 +62,7 @@ layers:
   - LSHFT
   - LCTRL
   - {t: Nav, h: toggle}
-  - APP
+  - Compose
   - LEFT
   - DOWN
   - RIGHT
@@ -105,7 +105,7 @@ layers:
   - LSHFT
   - LCTRL
   - {t: Mouse, h: toggle}
-  - APP
+  - Compose
   - {t: Left, s: mouse}
   - {t: Down, s: mouse}
   - {t: Right, s: mouse}
@@ -167,11 +167,11 @@ layers:
   - ''
   - ''
   - {type: held}
-  - ''
-  - ''
+  - RET
+  - {t: Tab, s: S-Tab}
   - PP
   - MUTE
-  - ''
+  - DEL
   Num:
   - {t: ▽, type: trans}
   - '['
