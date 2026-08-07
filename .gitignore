@@ -1,2 +1,5 @@
 .zmk/
 .cache/
+
+# fetched by draw/generate.sh
+draw/.zmk-helpers/
