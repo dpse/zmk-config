@@ -1,6 +1,6 @@
 layout: {qmk_info_json: draw/physical_layout.json, layout_name: LAYOUT}
 layers:
-  BASE:
+  Base:
   - {t: AltGr, s: sticky}
   - Q
   - W
@@ -36,14 +36,14 @@ layers:
   - ','
   - .
   - /
-  - DEL
-  - {t: ESC, h: MEDIA}
-  - {t: RET, h: NAV}
-  - {t: Tab, h: MOUSE, s: S-Tab}
-  - {t: BSPC, h: SYM}
-  - {t: SPACE, h: NUM}
-  - {t: DEL, h: FUN}
-  NAV:
+  - Leader
+  - {t: ESC, h: Media}
+  - {t: RET, h: Nav}
+  - {t: Tab, h: Mouse, s: S-Tab}
+  - {t: BSPC, h: Sym}
+  - {t: SPACE, h: Num}
+  - {t: DEL, h: Fun}
+  Nav:
   - {t: ▽, type: trans}
   - ''
   - ''
@@ -61,19 +61,19 @@ layers:
   - LALT
   - LSHFT
   - LCTRL
-  - {t: NAV, h: toggle}
-  - Repeat
+  - {t: Nav, h: toggle}
+  - APP
   - LEFT
   - DOWN
   - RIGHT
   - PG DN
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - TAB
-  - Ctl+Sft+TAB
-  - Ctl+TAB
+  - {t: Tab, s: S-Tab}
   - Alt+LEFT
   - Alt+RIGHT
+  - Ctl+Sft+TAB
+  - Ctl+TAB
   - Ctl+Sft+Z
   - Ctl+V
   - Ctl+C
@@ -86,14 +86,14 @@ layers:
   - BSPC
   - SPACE
   - DEL
-  MOUSE:
+  Mouse:
   - {t: ▽, type: trans}
   - ''
   - ''
   - {t: Alt+Tab, s: swap}
   - ''
   - ''
-  - ''
+  - M Click
   - {t: Left, s: scroll}
   - {t: Up, s: mouse}
   - {t: Right, s: scroll}
@@ -104,19 +104,19 @@ layers:
   - LALT
   - LSHFT
   - LCTRL
-  - {t: MOUSE, h: toggle}
-  - M Click
+  - {t: Mouse, h: toggle}
+  - APP
   - {t: Left, s: mouse}
   - {t: Down, s: mouse}
   - {t: Right, s: mouse}
   - {t: Down, s: scroll}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - TAB
-  - Ctl+Sft+TAB
-  - Ctl+TAB
+  - {t: Tab, s: S-Tab}
   - Alt+LEFT
   - Alt+RIGHT
+  - Ctl+Sft+TAB
+  - Ctl+TAB
   - Ctl+Sft+Z
   - Ctl+V
   - Ctl+C
@@ -129,7 +129,7 @@ layers:
   - R Click
   - L Click
   - DEL
-  MEDIA:
+  Media:
   - ''
   - {t: BT, h: '0'}
   - {t: BT, h: '1'}
@@ -147,8 +147,8 @@ layers:
   - LALT
   - LSHFT
   - LCTRL
-  - {t: MEDIA, h: toggle}
-  - Leader
+  - {t: Media, h: toggle}
+  - ''
   - PREV
   - VOL DN
   - NEXT
@@ -161,9 +161,9 @@ layers:
   - {t: Boot, s: 2x}
   - {t: Reset, s: 2x}
   - ''
-  - ''
+  - RW
   - STOP
-  - ''
+  - FF
   - ''
   - ''
   - {type: held}
@@ -172,7 +172,7 @@ layers:
   - PP
   - MUTE
   - ''
-  NUM:
+  Num:
   - {t: ▽, type: trans}
   - '['
   - '7'
@@ -185,13 +185,13 @@ layers:
   - =>
   - ->
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - '-'
   - ;
   - '4'
   - '5'
   - '6'
   - '='
-  - {t: NUM, h: toggle}
+  - {t: Num, h: toggle}
   - RCTRL
   - RSHFT
   - LALT
@@ -215,7 +215,7 @@ layers:
   - BSPC
   - {type: held}
   - DEL
-  SYM:
+  Sym:
   - {t: ▽, type: trans}
   - '{'
   - '&'
@@ -228,13 +228,13 @@ layers:
   - =>
   - ->
   - {t: ▽, type: trans}
-  - {t: ▽, type: trans}
+  - _
   - ':'
   - $
   - '%'
   - ^
   - +
-  - {t: SYM, h: toggle}
+  - {t: Sym, h: toggle}
   - RCTRL
   - RSHFT
   - LALT
@@ -258,8 +258,8 @@ layers:
   - {type: held}
   - SPACE
   - DEL
-  FUN:
-  - KP NUM
+  Fun:
+  - {t: AltGr, s: sticky}
   - F12
   - F7
   - F8
@@ -271,19 +271,19 @@ layers:
   - ''
   - ''
   - ''
-  - {t: ▽, type: trans}
+  - ESC
   - F11
   - F4
   - F5
   - F6
   - SLCK
-  - {t: FUN, h: toggle}
+  - {t: Fun, h: toggle}
   - RCTRL
   - RSHFT
   - LALT
   - RGUI
   - ''
-  - {t: ▽, type: trans}
+  - KP NUM
   - F10
   - F1
   - F2
@@ -304,43 +304,46 @@ layers:
 combos:
 - p: [1, 2]
   k: '['
-  l: [BASE]
+  l: [Base]
 - p: [2, 3]
   k: '{'
-  l: [BASE]
+  l: [Base]
 - p: [3, 4]
   k: (
-  l: [BASE]
+  l: [Base]
 - p: [7, 8]
   k: )
-  l: [BASE]
+  l: [Base]
 - p: [8, 9]
   k: '}'
-  l: [BASE]
+  l: [Base]
 - p: [9, 10]
   k: ']'
-  l: [BASE]
+  l: [Base]
+- p: [32, 33]
+  k: =>
+  l: [Base]
 - p: [15, 16]
   k: BSPC
-  l: [BASE]
+  l: [Base]
 - p: [19, 20]
   k: ESC
-  l: [BASE]
+  l: [Base]
 - p: [25, 26]
   k: Ctl+Z
-  l: [BASE]
+  l: [Base]
 - p: [26, 27]
   k: Ctl+X
-  l: [BASE]
+  l: [Base]
 - p: [27, 28]
   k: Ctl+C
-  l: [BASE]
+  l: [Base]
 - p: [28, 29]
   k: Ctl+V
-  l: [BASE]
+  l: [Base]
 - p: [37, 38]
   k: {t: Caps, s: word}
-  l: [BASE]
+  l: [Base]
 - p: [39, 40]
   k: {t: Num, s: word}
-  l: [BASE]
+  l: [Base]

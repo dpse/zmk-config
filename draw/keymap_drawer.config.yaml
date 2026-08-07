@@ -2,6 +2,12 @@
 #
 # Regenerate with draw/generate.sh, or let the draw-keymaps.yml workflow do it.
 parse_config:
+  # The keymap uses zmk-helpers macros; without these headers the preprocessor
+  # leaves ZMK_LAYER() unexpanded and no zmk,keymap node is ever produced.
+  # draw/generate.sh fetches them to this path.
+  zmk_additional_includes:
+    - "draw/.zmk-helpers/include"
+
   # Our custom behaviours would otherwise render as raw node names like
   # "&swapper". Map them to something readable.
   raw_binding_map:
@@ -63,4 +69,13 @@ draw_config:
       paint-order: normal;
     }
     text.label { font-size: 15px; letter-spacing: 0.04em; }
-    text.footer { font-size: 11px; opacity: 0.55; font-weight: normal; }
+    text.footer { font-size: 11px; opacity: 0.7; font-weight: normal; }
+
+    /* The diagram carries its own background. prefers-color-scheme follows the
+       OS, not GitHub's theme toggle, so a light-mode render can otherwise land
+       on a dark page with dark text on it. An opaque backdrop keeps the
+       contrast correct in all four combinations. */
+    svg.keymap { background-color: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      svg.keymap { background-color: #0d1117; }
+    }
