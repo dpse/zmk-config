@@ -8,6 +8,45 @@ a [ZSA Voyager](https://www.zsa.io/voyager) running
 
 ![keymap](draw/corne_choc_pro.svg)
 
+## Leader
+
+Tap leader (bottom right, outer column), release, then the sequence. These emit
+compose sequences, so they need a compose key set in the OS — Menu here.
+
+| | | | | | |
+|---|---|---|---|---|---|
+| `n` – | `m` — | `.` … | `o` • | `d` ° | `s` § |
+| `c` © | `t` ™ | `e` € | `x` × | `/` ÷ | `p` ± |
+| `2` ² | `3` ³ | `h` ½ | `q` √ | `i` ∞ | |
+
+| Prefix | | |
+|---|---|---|
+| `a` | `r l u d` | → ← ↑ ↓ &nbsp;·&nbsp; `i` ⇒ |
+| `k` | `n l g a` | ≠ ≤ ≥ ≈ |
+| `g` | `a b g d e h l m p s f w` | α β γ δ ε θ λ μ π σ φ ω |
+
+System: `ble` `usb` switch output, `boot` `reset` — spelled out in full.
+
+## Magic shift
+
+The bottom-left outer key, one behaviour per context:
+
+| | |
+|---|---|
+| hold | Shift |
+| tap right after a letter | repeat that key |
+| tap otherwise | sticky Shift — capitalises the next letter |
+| Shift + tap, or double tap | Caps Word |
+
+## Word modes
+
+Both thumb pairs, self-cancelling — no exit key needed:
+
+| | |
+|---|---|
+| both left thumbs | Caps Word |
+| both right thumbs | num-word: NUM until a non-number key |
+
 ## Building
 
 GitHub Actions builds on every push (`build.yaml`). For local builds, clone ZMK
