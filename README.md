@@ -1,13 +1,12 @@
 # zmk-config — Corne Choc Pro BT
 
-ZMK firmware for a [Keebart Corne Choc Pro BT](https://www.keebart.com/products/corne-wireless).
+[ZMK](https://zmk.dev) firmware for a
+[Keebart Corne Choc Pro BT](https://www.keebart.com/products/corne-wireless).
 [Miryoku](https://github.com/manna-harbour/miryoku)-derived layout, ported from
-a ZSA Voyager running QMK.
+a [ZSA Voyager](https://www.zsa.io/voyager) running
+[QMK](https://qmk.fm).
 
 ![keymap](draw/corne_choc_pro.svg)
-
-Sub-layers are reachable only from BASE — release a thumb and press another
-rather than chording.
 
 ## Building
 
