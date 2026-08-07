@@ -142,15 +142,6 @@ text.label, text.footer {
 }
 text.label { font-size: 15px; letter-spacing: 0.04em; }
 text.footer { font-size: 11px; opacity: 0.7; font-weight: normal; }
-
-/* The diagram carries its own background. prefers-color-scheme follows the
-   OS, not GitHub's theme toggle, so a light-mode render can otherwise land
-   on a dark page with dark text on it. An opaque backdrop keeps the
-   contrast correct in all four combinations. */
-svg.keymap { background-color: #ffffff; }
-@media (prefers-color-scheme: dark) {
-  svg.keymap { background-color: #0d1117; }
-}
 </style>
 <g transform="translate(30, 0)" class="layer-Base">
 <text x="0" y="28" class="label" id="Base">Base:</text>
