@@ -9,13 +9,12 @@
  *   28  29  30  31  32  33      |     34  35  36  37  38  39
  *               40  41  42      | 43  44  45
  *
- * Positions 6, 7, 20 and 21 are the inner "extra" keys. If your unit does not
- * have those switches fitted they simply never fire, and their &none bindings
- * are inert.
+ * Positions 6, 7, 20 and 21 are the board's optional inner keys, not fitted on
+ * this unit, so their &none bindings never fire.
  *
  * Thumbs, outermost -> innermost:
- *   left  40 = MEDIA      41 = Enter / NAV   42 = Tab / MOUSE
- *   right 43 = Bspc / SYM 44 = Space / NUM   45 = FUN
+ *   left  40 = Esc / MEDIA  41 = Enter / NAV  42 = Tab / MOUSE
+ *   right 43 = Bspc / SYM   44 = Space / NUM  45 = Del / FUN
  */
 
 #include <behaviors.dtsi>
@@ -176,7 +175,7 @@
          *
          * Double tap is not coded: the first tap leaves a sticky Shift active,
          * so the second tap sees Shift held and the mod-morph sends Caps Word.
-         * Caps Word is also on the D+K combo.
+         * Caps Word is also on the left-thumb combo.
          */
         shift_repeat: shift_repeat {
             compatible = "zmk,behavior-adaptive-key";
@@ -266,22 +265,16 @@
     };
 
     /*
-     * Combos, ported from the Voyager. All are scoped to BASE: ZMK tests a
-     * combo against the *highest* active layer, so listing BASE suppresses
-     * them whenever a sub-layer is held. Without that, the clipboard combos
-     * would fire on NAV/MOUSE where those same positions carry the browser
-     * row.
+     * All combos are scoped to BASE. ZMK tests a combo against the *highest*
+     * active layer, so listing BASE suppresses them whenever a sub-layer is
+     * held - without it the clipboard combos would fire on NAV/MOUSE, where
+     * those positions carry the browser row.
      *
-     * The four "=" anchored operator combos from the Voyager (!= <= >= ->)
-     * are deliberately absent: they were anchored on the number row, which
-     * this board does not have. The operator row on NUM/SYM replaces them.
-     *
-     * require-prior-idle-ms is split by misfire risk. The row-0 bracket
+     * require-prior-idle-ms is split by misfire risk: the top-row bracket
      * combos sit on common digraphs (we, er, ui, io, op) and need the
-     * protection; the home-row and clipboard combos sit on rare ones
-     * (df, jk, zx, xc, cv, vb) and are set low so they stay responsive
-     * immediately after a keystroke - which is exactly when you reach for
-     * backspace or escape.
+     * protection, while the home-row and clipboard ones sit on rare digraphs
+     * (df, jk, zx, xc, cv, vb) and are set low so they stay responsive right
+     * after a keystroke - which is when you reach for backspace or escape.
      */
     combos {
         compatible = "zmk,combos";
