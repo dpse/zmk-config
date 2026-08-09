@@ -112,6 +112,7 @@ ZMK_HOLD_TAP(lt_tab, bindings = <&mo>, <&tab_dance>; flavor = "balanced";
 GUARDED(td_boot,  &bootloader)
 GUARDED(td_reset, &sys_reset)
 GUARDED(td_btclr, &bt BT_CLR)
+GUARDED(td_btclrall, &bt BT_CLR_ALL)
 
 /* Alt-Tab swapper. Holds Alt across repeated Tabs. The module only ends on
  * layer *activation*, never deactivation, so releasing the NAV thumb would
@@ -162,48 +163,112 @@ ZMK_HOLD_TAP(magic_shift, bindings = <&kp>, <&magic_shift_tap>;
 
             /* Punctuation and maths. Single letters, avoiding B, U and R,
              * which are prefixes of the system sequences above. */
-            lead_endash { sequence = <N>; bindings = <&c_endash>; };
-            lead_emdash { sequence = <M>; bindings = <&c_emdash>; };
-            lead_deg    { sequence = <D>; bindings = <&c_deg>; };
-            lead_times  { sequence = <X>; bindings = <&c_times>; };
-            lead_div    { sequence = <FSLH>; bindings = <&c_div>; };
-            lead_pm     { sequence = <P>; bindings = <&c_pm>; };
-            lead_ellip  { sequence = <DOT>; bindings = <&c_ellip>; };
-            lead_bullet { sequence = <O>; bindings = <&c_bullet>; };
-            lead_euro   { sequence = <E>; bindings = <&c_euro>; };
-            lead_sect   { sequence = <S>; bindings = <&c_sect>; };
-            lead_copy   { sequence = <C>; bindings = <&c_copy>; };
-            lead_tm     { sequence = <T>; bindings = <&c_tm>; };
-            lead_sup2   { sequence = <N2>; bindings = <&c_sup2>; };
-            lead_sup3   { sequence = <N3>; bindings = <&c_sup3>; };
-            lead_half   { sequence = <H>; bindings = <&c_half>; };
+            lead_endash { sequence = <N>; bindings = <&c_endash>; };  // –
+            lead_emdash { sequence = <M>; bindings = <&c_emdash>; };  // —
+            lead_deg    { sequence = <D>; bindings = <&c_deg>; };  // °
+            lead_times  { sequence = <X>; bindings = <&c_times>; };  // ×
+            lead_div    { sequence = <FSLH>; bindings = <&c_div>; };  // ÷
+            lead_pm     { sequence = <P>; bindings = <&c_pm>; };  // ±
+            lead_ellip  { sequence = <DOT>; bindings = <&c_ellip>; };  // …
+            lead_bullet { sequence = <O>; bindings = <&c_bullet>; };  // •
+            lead_euro   { sequence = <E>; bindings = <&c_euro>; };  // €
+            lead_sect   { sequence = <S>; bindings = <&c_sect>; };  // §
+            lead_copy   { sequence = <C>; bindings = <&c_copy>; };  // ©
+            lead_tm     { sequence = <T>; bindings = <&c_tm>; };  // ™
+            lead_inv    { sequence = <V>; bindings = <&c_inv>; };  // ⁻¹
+            lead_half   { sequence = <H>; bindings = <&c_half>; };  // ½
 
-            /* Arrows: leader a + direction. Relations: leader k + mnemonic. */
-            lead_right  { sequence = <A R>; bindings = <&c_right>; };
-            lead_left   { sequence = <A L>; bindings = <&c_left>; };
-            lead_up     { sequence = <A U>; bindings = <&c_up>; };
-            lead_down   { sequence = <A D>; bindings = <&c_down>; };
-            lead_impl   { sequence = <A I>; bindings = <&c_implies>; };
-            lead_ne     { sequence = <K N>; bindings = <&c_ne>; };
-            lead_le     { sequence = <K L>; bindings = <&c_le>; };
-            lead_ge     { sequence = <K G>; bindings = <&c_ge>; };
-            lead_approx { sequence = <K A>; bindings = <&c_approx>; };
-            lead_sqrt   { sequence = <Q>;   bindings = <&c_sqrt>; };
-            lead_inf    { sequence = <I>;   bindings = <&c_inf>; };
+            /* Arrows sit on the same inverted-T as the Nav layer (I above J K L),
+             * so the positions transfer. Doubled forms go on the row above.
+             * Relations: leader k + mnemonic. */
+            lead_up     { sequence = <A I>; bindings = <&c_up>; };  // ↑
+            lead_left   { sequence = <A J>; bindings = <&c_left>; };  // ←
+            lead_down   { sequence = <A K>; bindings = <&c_down>; };  // ↓
+            lead_right  { sequence = <A L>; bindings = <&c_right>; };  // →
+            lead_iff    { sequence = <A U>; bindings = <&c_iff>; };  // ⇔
+            lead_impl   { sequence = <A O>; bindings = <&c_implies>; };  // ⇒
+            lead_bicond { sequence = <A P>; bindings = <&c_bicond>; };  // ↔
+            lead_ne     { sequence = <K N>; bindings = <&c_ne>; };  // ≠
+            lead_le     { sequence = <K L>; bindings = <&c_le>; };  // ≤
+            lead_ge     { sequence = <K G>; bindings = <&c_ge>; };  // ≥
+            lead_approx { sequence = <K A>; bindings = <&c_approx>; };  // ≈
+            lead_ident  { sequence = <K E>; bindings = <&c_ident>; };  // ≡
+            lead_cong   { sequence = <K C>; bindings = <&c_cong>; };  // ≅
+            lead_ll     { sequence = <K COMMA>; bindings = <&c_ll>; };  // ≪
+            lead_gg     { sequence = <K DOT>; bindings = <&c_gg>; };  // ≫
+            lead_defeq  { sequence = <K D>; bindings = <&c_defeq>; };  // ≔
+            lead_sqrt   { sequence = <Q>;   bindings = <&c_sqrt>; };  // √
+            lead_inf    { sequence = <I>;   bindings = <&c_inf>; };  // ∞
+            /* Prefix families. Each sends only the compose prefix, so the next key is
+             * typed normally, from any layer, with Shift for a capital. */
+            lead_greek { sequence = <G>;     bindings = <&c_greek>; };  // αβγ
+            lead_sup   { sequence = <CARET>; bindings = <&c_sup>; };  // ⁿ
+            lead_sub   { sequence = <UNDER>; bindings = <&c_sub>; };  // ₙ
 
-            /* Greek: leader g <letter>. */
-            lead_alpha  { sequence = <G A>; bindings = <&c_alpha>; };
-            lead_beta   { sequence = <G B>; bindings = <&c_beta>; };
-            lead_gamma  { sequence = <G G>; bindings = <&c_gamma>; };
-            lead_delta  { sequence = <G D>; bindings = <&c_delta>; };
-            lead_eps    { sequence = <G E>; bindings = <&c_eps>; };
-            lead_theta  { sequence = <G H>; bindings = <&c_theta>; };
-            lead_lambda { sequence = <G L>; bindings = <&c_lambda>; };
-            lead_mu     { sequence = <G M>; bindings = <&c_mu>; };
-            lead_pi     { sequence = <G P>; bindings = <&c_pi>; };
-            lead_sigma  { sequence = <G S>; bindings = <&c_sigma>; };
-            lead_phi    { sequence = <G F>; bindings = <&c_phi>; };
-            lead_omega  { sequence = <G W>; bindings = <&c_omega>; };
+            /* Logic and membership. */
+            lead_all    { sequence = <L A>; bindings = <&c_all>; };  // ∀
+            lead_exists { sequence = <L E>; bindings = <&c_exists>; };  // ∃
+            lead_not    { sequence = <L N>; bindings = <&c_not>; };  // ¬
+            lead_meet   { sequence = <L M>; bindings = <&c_and>; };  // ∧
+            lead_join   { sequence = <L J>; bindings = <&c_or>; };  // ∨
+            lead_xor    { sequence = <L X>; bindings = <&c_xor>; };  // ⊻
+            lead_thus   { sequence = <L T>; bindings = <&c_thus>; };  // ∴
+            lead_since  { sequence = <L B>; bindings = <&c_since>; };  // ∵
+            lead_qed    { sequence = <L Q>; bindings = <&c_qed>; };  // ∎
+            lead_in     { sequence = <L I>; bindings = <&c_in>; };  // ∈
+            lead_notin  { sequence = <L O>; bindings = <&c_notin>; };  // ∉
+            lead_owns   { sequence = <L R>; bindings = <&c_ni>; };  // ∋
+            lead_empty  { sequence = <L Z>; bindings = <&c_empty>; };  // ∅
+            lead_union  { sequence = <L U>; bindings = <&c_union>; };  // ∪
+            lead_inter  { sequence = <L C>; bindings = <&c_inter>; };  // ∩
+            lead_subset { sequence = <L S>; bindings = <&c_subset>; };  // ⊂
+            lead_supset { sequence = <L G>; bindings = <&c_supset>; };  // ⊃
+            lead_subeq  { sequence = <L K>; bindings = <&c_subeq>; };  // ⊆
+            lead_supeq  { sequence = <L P>; bindings = <&c_supeq>; };  // ⊇
+
+            /* Number sets. */
+            lead_reals  { sequence = <HASH R>; bindings = <&c_reals>; };  // ℝ
+            lead_nats   { sequence = <HASH N>; bindings = <&c_nats>; };  // ℕ
+            lead_ints   { sequence = <HASH Z>; bindings = <&c_ints>; };  // ℤ
+            lead_rats   { sequence = <HASH Q>; bindings = <&c_rats>; };  // ℚ
+            lead_cplx   { sequence = <HASH C>; bindings = <&c_cplx>; };  // ℂ
+            lead_quats  { sequence = <HASH H>; bindings = <&c_quats>; };  // ℍ  // ∵
+
+            /* Big operators. */
+            lead_sum      { sequence = <F S>;    bindings = <&c_sum>; };  // ∑
+            lead_prod     { sequence = <F P>;    bindings = <&c_prod>; };  // ∏  // ∑
+            lead_integral { sequence = <F I>;    bindings = <&c_int>; };  // ∫
+            lead_oint     { sequence = <F O>;    bindings = <&c_oint>; };  // ∮
+            lead_partial  { sequence = <F D>;    bindings = <&c_part>; };  // ∂
+            lead_nabla    { sequence = <F N>;    bindings = <&c_del>; };  // ∇
+            lead_ring     { sequence = <F C>;    bindings = <&c_ring>; };  // ∘
+            lead_cdot     { sequence = <F DOT>;  bindings = <&c_cdot>; };  // ⋅
+            lead_hdots    { sequence = <F H>; bindings = <&c_hdots>; };  // ⋯
+            lead_vdots    { sequence = <F V>; bindings = <&c_vdots>; };  // ⋮
+            lead_ddots    { sequence = <F G>; bindings = <&c_ddots>; };  // ⋱
+            lead_otimes   { sequence = <F X>;    bindings = <&c_otimes>; };  // ⊗
+            lead_oplus    { sequence = <F A>; bindings = <&c_oplus>; };  // ⊕
+
+            /* Quotes and marks. */
+            lead_ldquo  { sequence = <SQT O>;   bindings = <&c_ldquo>; };  // “
+            lead_rdquo  { sequence = <SQT P>;   bindings = <&c_rdquo>; };  // ”
+            lead_lsquo  { sequence = <SQT K>;   bindings = <&c_lsquo>; };  // ‘
+            lead_rsquo  { sequence = <SQT L>;   bindings = <&c_rsquo>; };  // ’
+            lead_bdquo  { sequence = <SQT D>;   bindings = <&c_bdquo>; };  // „
+            lead_laquo  { sequence = <SQT COMMA>;   bindings = <&c_laquo>; };  // «
+            lead_raquo  { sequence = <SQT DOT>;   bindings = <&c_raquo>; };  // »
+            lead_prime  { sequence = <SQT F>; bindings = <&c_prime>; };  // ′
+            lead_dprime { sequence = <SQT I>; bindings = <&c_dprime>; };  // ″
+            lead_dagger { sequence = <SQT T>;   bindings = <&c_dagger>; };  // †
+            lead_permil { sequence = <SQT M>;   bindings = <&c_permil>; };  // ‰
+            lead_pertenk{ sequence = <SQT X>; bindings = <&c_pertenk>; };  // ‱
+            lead_fleuron{ sequence = <SQT H>; bindings = <&c_fleuron>; };  // ❦
+            lead_asteri { sequence = <SQT A>; bindings = <&c_asteri>; };  // ⁂
+            lead_tribull{ sequence = <SQT N>; bindings = <&c_tribull>; };  // ‣
+            lead_interro{ sequence = <SQT Q>; bindings = <&c_interro>; };  // ‽
+            lead_twodot { sequence = <SQT E>; bindings = <&c_twodot>; };  // ‥
+            lead_iquest { sequence = <SQT U>; bindings = <&c_iquest>; };  // ¿
+            lead_iexcl  { sequence = <SQT V>; bindings = <&c_iexcl>; };  // ¡
         };
     };
 };
@@ -229,7 +294,8 @@ OP(arrow,    &kp MINUS &kp GT)
  * typed by hand. Add more by following the same pattern. */
 #define COMPOSE_KEY &kp K_APP
 
-#define COMPOSE(NAME, KEYS)                                                        ZMK_MACRO(NAME, wait-ms = <10>; tap-ms = <10>; bindings = <COMPOSE_KEY KEYS>;)
+#define COMPOSE(NAME, KEYS)                                                        \
+    ZMK_MACRO(NAME, wait-ms = <10>; tap-ms = <10>; bindings = <COMPOSE_KEY KEYS>;)
 
 COMPOSE(c_endash, &kp MINUS &kp MINUS &kp DOT)     // en dash
 COMPOSE(c_emdash, &kp MINUS &kp MINUS &kp MINUS)   // em dash
@@ -243,8 +309,6 @@ COMPOSE(c_euro,   &kp E     &kp EQUAL)             // euro
 COMPOSE(c_sect,   &kp S     &kp O)                 // section
 COMPOSE(c_copy,   &kp O     &kp C)                 // copyright
 COMPOSE(c_tm,     &kp T     &kp M)                 // trademark
-COMPOSE(c_sup2,   &kp CARET &kp N2)                // superscript two
-COMPOSE(c_sup3,   &kp CARET &kp N3)                // superscript three
 COMPOSE(c_half,   &kp N1    &kp N2)                // one half
 
 /* Arrows and relations. All from the Xorg base table, and the dead-key-free
@@ -262,20 +326,98 @@ COMPOSE(c_approx,  &kp TILDE &kp TILDE)            // almost equal to
 COMPOSE(c_sqrt,    &kp V     &kp FSLH)             // square root
 COMPOSE(c_inf,     &kp N8    &kp N8)               // infinity
 
-/* Greek, via the compose table's asterisk prefix. */
-#define GREEK(NAME, LETTER) COMPOSE(NAME, &kp ASTRK &kp LETTER)
-GREEK(c_alpha, A)
-GREEK(c_beta,  B)
-GREEK(c_gamma, G)
-GREEK(c_delta, D)
-GREEK(c_eps,   E)
-GREEK(c_theta, H)
-GREEK(c_lambda, L)
-GREEK(c_mu,    M)
-GREEK(c_pi,    P)
-GREEK(c_sigma, S)
-GREEK(c_phi,   F)
-GREEK(c_omega, W)
+/* Prefix-only sequences. Compose is stateful, so the leader has already exited
+ * by the time the OS waits for the rest: type it from any layer, and Shift for
+ * a capital. One macro each covers a whole family.
+ *   *  the compose table's Greek prefix: all 25 letters, plus o=composition
+ *      and .=dot operator. Its letters are the table's, not phonetic: theta=u,
+ *      xi=j, phi=f, chi=x, psi=c, omega=v.
+ *   ^  superscript, _ subscript: 0-9 - + = ( )
+ *   {  set relations: (=subset )=superset U=union ^=intersection,
+ *      with = before the bracket for the underlined forms. */
+COMPOSE(c_greek,  &kp ASTRK)
+COMPOSE(c_sup,    &kp CARET)
+COMPOSE(c_sub,    &kp UNDER)
+COMPOSE(c_inv,    &kp CARET &kp MINUS COMPOSE_KEY &kp CARET &kp N1)
+
+/* Big operators. These are word sequences in the compose table, which prefixes
+ * them with a second compose press. */
+#define COMPOSE2(NAME, KEYS) COMPOSE(NAME, COMPOSE_KEY KEYS)
+COMPOSE2(c_sum,   &kp S &kp U &kp M)               // sum
+COMPOSE2(c_int,   &kp I &kp N &kp T)               // integral
+COMPOSE2(c_oint,  &kp O &kp I &kp N &kp T)         // contour integral
+COMPOSE2(c_part,  &kp P &kp A &kp R &kp T)         // partial
+COMPOSE2(c_del,   &kp D &kp E &kp L)               // nabla
+COMPOSE2(c_ring,  &kp ASTRK &kp O)                 // ring operator
+COMPOSE2(c_cdot,  &kp ASTRK &kp DOT)               // dot operator
+COMPOSE(c_otimes, &kp LPAR &kp X &kp X &kp RPAR)
+COMPOSE(c_oplus,  &kp LPAR &kp PLUS &kp RPAR)
+/* Not in the compose tables, so the rule is ours, in ~/.XCompose. It follows
+ * the table's own convention for word sequences. */
+COMPOSE2(c_prod,  &kp P &kp R &kp O &kp D)         // product
+
+/* Number sets, doubled capitals in the table. */
+COMPOSE(c_reals,  &kp LS(R) &kp LS(R))
+COMPOSE(c_nats,   &kp LS(N) &kp LS(N))
+COMPOSE(c_ints,   &kp LS(Z) &kp LS(Z))
+COMPOSE(c_rats,   &kp LS(Q) &kp LS(Q))
+COMPOSE(c_cplx,   &kp LS(C) &kp LS(C))
+COMPOSE(c_quats,  &kp PIPE  &kp LS(H))
+
+COMPOSE(c_iff,    &kp LT &kp MINUS &kp EQUAL &kp GT)   // if and only if
+COMPOSE(c_bicond, &kp LT &kp MINUS &kp GT)             // bidirectional
+COMPOSE(c_xor,    &kp BSLH &kp UNDER &kp FSLH)         // exclusive or
+
+/* Logic and set membership. */
+COMPOSE(c_in,     &kp I     &kp N)
+COMPOSE(c_notin,  &kp EXCL  &kp I     &kp N)
+COMPOSE(c_ni,     &kp N     &kp I)
+COMPOSE(c_empty,  &kp N0    &kp FSLH)
+COMPOSE(c_all,    &kp LS(A) &kp LS(A))
+COMPOSE(c_exists, &kp LS(E) &kp LS(E))
+COMPOSE(c_not,    &kp COMMA &kp MINUS)
+COMPOSE(c_and,    &kp FSLH  &kp BSLH)
+COMPOSE(c_or,     &kp BSLH  &kp FSLH)
+COMPOSE(c_union,  &kp LBRC  &kp LS(U))
+COMPOSE(c_inter,  &kp LBRC  &kp CARET)
+COMPOSE(c_subset, &kp LBRC  &kp LPAR)
+COMPOSE(c_subeq,  &kp LBRC  &kp EQUAL &kp LPAR)
+COMPOSE(c_supeq,  &kp LBRC  &kp EQUAL &kp RPAR)
+COMPOSE(c_supset, &kp LBRC  &kp RPAR)
+COMPOSE(c_thus,   &kp COLON &kp DOT)
+COMPOSE(c_since,  &kp DOT   &kp COLON)
+
+/* Relations, alongside the existing != <= >= ~~. */
+COMPOSE(c_ident,  &kp EQUAL &kp EQUAL)
+COMPOSE(c_cong,   &kp TILDE &kp EQUAL)
+COMPOSE(c_ll,     &kp PLUS  &kp LT)
+COMPOSE(c_gg,     &kp PLUS  &kp GT)
+
+/* Quotes and marks, on the table's own < and > pattern. */
+COMPOSE(c_ldquo,  &kp LT    &kp DQT)
+COMPOSE(c_rdquo,  &kp GT    &kp DQT)
+COMPOSE(c_lsquo,  &kp LT    &kp SQT)
+COMPOSE(c_rsquo,  &kp GT    &kp SQT)
+COMPOSE(c_bdquo,  &kp COMMA &kp DQT)
+COMPOSE(c_laquo,  &kp LT    &kp LT)
+COMPOSE(c_raquo,  &kp GT    &kp GT)
+COMPOSE(c_prime,  &kp ASTRK &kp DOT &kp SQT)
+COMPOSE(c_dprime, &kp ASTRK &kp DOT &kp DQT)
+COMPOSE(c_dagger, &kp D &kp A &kp G)
+COMPOSE(c_permil, &kp PERCENT &kp O)
+COMPOSE(c_pertenk,&kp PERCENT &kp PERCENT)
+COMPOSE(c_fleuron,&kp F     &kp LT    &kp N3)
+COMPOSE(c_asteri, &kp ASTRK &kp N3)
+COMPOSE(c_tribull,&kp PIPE  &kp GT)
+COMPOSE(c_interro,&kp EXCL  &kp QMARK)
+COMPOSE(c_twodot, &kp N2    &kp DOT)
+COMPOSE(c_iquest, &kp QMARK &kp QMARK)
+COMPOSE(c_iexcl,  &kp EXCL  &kp EXCL)
+COMPOSE(c_defeq,  &kp COLON &kp EQUAL)
+COMPOSE(c_hdots,  &kp C     &kp DOT   &kp DOT)
+COMPOSE(c_vdots,  &kp V     &kp DOT   &kp DOT)
+COMPOSE(c_ddots,  &kp DOT   &kp BSLH  &kp DOT)
+COMPOSE2(c_qed,   &kp LS(Q) &kp LS(E) &kp LS(D))
 
 /*
  * ZMK_COMBO(name, bindings, positions, layers, timeout, prior-idle).
@@ -334,9 +476,9 @@ ZMK_LAYER(Mouse,
 
 ZMK_LAYER(Media,
 
-&none      &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &out OUT_TOG  &none  &none  &none  &none        &kp C_VOL_UP  &none        &none  &none
-&none      &kp LGUI      &kp LALT      &kp LSHFT     &kp LCTRL     &tog MEDIA    &none  &none  &none   &kp C_PREV  &kp C_VOL_DN  &kp C_NEXT   &none  &none
-&none      &td_btclr     &none         &none         &td_boot      &td_reset                   &none  &kp C_RW     &kp C_STOP    &kp C_FF     &none  &none
+&bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4  &out OUT_TOG  &none  &none  &none  &none        &kp C_VOL_UP  &none        &kp C_BRI_UP &none
+&none      &kp LGUI      &kp LALT      &kp LSHFT     &kp LCTRL     &tog MEDIA    &none  &none  &none   &kp C_PREV  &kp C_VOL_DN  &kp C_NEXT   &kp C_BRI_DN &none
+&none      &td_btclr     &td_btclrall  &none         &td_boot      &td_reset                   &none  &kp C_RW     &kp C_STOP    &kp C_FF     &none  &none
                                       &trans    &kp RET    &tab_dance          &kp C_PP   &kp C_MUTE  &kp DEL
 )
 
@@ -358,9 +500,9 @@ ZMK_LAYER(Sym,
 
 ZMK_LAYER(Fun,
 
-&sk RALT &kp F12   &kp F7   &kp F8   &kp F9   &kp PSCRN         &none       &none  &none      &none       &none       &none      &none     &none
-&kp ESC  &kp F11   &kp F4   &kp F5   &kp F6   &kp SLCK          &none       &none  &tog FUN   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &none
-&kp KP_NUM &kp F10 &kp F1   &kp F2   &kp F3   &kp PAUSE_BREAK                      &none      &none       &none       &none      &none     &trans
+&kp CAPS &kp F12   &kp F7   &kp F8   &kp F9   &kp PSCRN         &none       &none  &none      &none       &none       &none      &none     &none
+&kp KP_NUM &kp F11 &kp F4   &kp F5   &kp F6   &kp SLCK          &none       &none  &tog FUN   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &none
+&none    &kp F10   &kp F1   &kp F2   &kp F3   &kp PAUSE_BREAK                      &none      &none       &none       &none      &none     &trans
                                       &kp ESC   &kp RET    &tab_dance          &kp BSPC   &kp SPACE   &trans
 )
 
