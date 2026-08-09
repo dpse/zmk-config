@@ -33,7 +33,7 @@ if [ ! -d "$HELPERS/include" ]; then
 fi
 
 keymap -c "$CONFIG" parse -z "$KEYMAP" -o "$OUT_YAML"
-python draw/prepare.py "$LAYOUT_DTS" "$OUT_YAML" "$OUT_JSON"
+python draw/prepare.py "$LAYOUT_DTS" "$OUT_YAML" "$OUT_JSON" "$KEYMAP"
 keymap -c "$CONFIG" draw "$OUT_YAML" -o "$OUT_SVG"
 
 echo "wrote $OUT_SVG"

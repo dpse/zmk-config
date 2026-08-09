@@ -21,7 +21,15 @@ parse_config:
     "&magic_shift LSHFT 0": {t: "Magic", h: "Shift"}
     "&td_boot": {t: "Boot", s: "2x"}
     "&td_reset": {t: "Reset", s: "2x"}
+    # The nice!view shows profile_index + 1, so label these the way the screen
+    # does rather than the way the binding is written.
+    "&bt BT_SEL 0": {t: "BT 1"}
+    "&bt BT_SEL 1": {t: "BT 2"}
+    "&bt BT_SEL 2": {t: "BT 3"}
+    "&bt BT_SEL 3": {t: "BT 4"}
+    "&bt BT_SEL 4": {t: "BT 5"}
     "&td_btclr": {t: "BT Clr", s: "2x"}
+    "&td_btclrall": {t: "BT Clr All", s: "2x"}
     "&neq": {t: "!="}
     "&lte": {t: "<="}
     "&gte": {t: ">="}
