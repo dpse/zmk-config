@@ -442,9 +442,17 @@ ZMK_COMBO(lpar, &kp LPAR, 3 4, BASE, 50, 150)                             // E +
 ZMK_COMBO(rpar, &kp RPAR, 9 10, BASE, 50, 150)                            // U + I -> )
 ZMK_COMBO(rbrc, &kp RBRC, 10 11, BASE, 50, 150)                           // I + O -> }
 ZMK_COMBO(rbkt, &kp RBKT, 11 12, BASE, 50, 150)                           // O + P -> ]
+// <= and >= stay on NUM and SYM: only one of the pair fits on this row, and
+// splitting them is worse.
+ZMK_COMBO(neq, &neq, 34 35, BASE, 50, 150)                                // N + M -> !=
+ZMK_COMBO(rarrow, &arrow, 35 36, BASE, 50, 150)                           // M + , -> ->
 ZMK_COMBO(fatarrow, &fatarrow, 36 37, BASE, 50, 150)                      // , + . -> =>
 ZMK_COMBO(bspc, &kp BSPC, 17 18, BASE, 50, 50)                            // D + F -> Backspace
 ZMK_COMBO(esc, &kp ESC, 23 24, BASE, 50, 50)                              // J + K -> Escape
+// Mirrored across the split: A + S and L + ; are the same two positions on
+// either hand. Shift gives plus and underscore for free.
+ZMK_COMBO(equal, &kp EQUAL, 15 16, BASE, 50, 50)                          // A + S -> Equal
+ZMK_COMBO(minus, &kp MINUS, 25 26, BASE, 50, 50)                          // L + ; -> Minus
 ZMK_COMBO(undo, &kp LC(Z), 29 30, BASE, 50, 50)                           // Z + X -> Undo
 ZMK_COMBO(cut, &kp LC(X), 30 31, BASE, 50, 50)                            // X + C -> Cut
 ZMK_COMBO(copy, &kp LC(C), 31 32, BASE, 50, 50)                           // C + V -> Copy
