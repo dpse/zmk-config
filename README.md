@@ -13,7 +13,7 @@ a [ZSA Voyager](https://www.zsa.io/voyager) running
 Tap leader (bottom right, outer column), release, then the sequence. These emit
 compose sequences, so they need a compose key set in the OS (Menu here).
 
-The diagram carries the whole tree, a board per group, named for what it holds:
+The diagram shows the whole tree, a layer per group, named for what it holds:
 arrows, relations, logic & sets, operators, typography, greek, number sets,
 superscript and subscript.
 
