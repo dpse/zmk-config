@@ -1,5 +1,5 @@
 /*
- * Corne Choc Pro BT - Miryoku-derived layout, ported from a ZSA Voyager (QMK).
+ * Corne Choc Pro BT - Miryoku-derived layout.
  *
  * Physical key positions:
  *
@@ -179,8 +179,7 @@ ZMK_HOLD_TAP(magic_shift, bindings = <&kp>, <&magic_shift_tap>;
             lead_half   { sequence = <H>; bindings = <&c_half>; };  // ½
 
             /* Arrows sit on the same inverted-T as the Nav layer (I above J K L),
-             * so the positions transfer. Doubled forms go on the row above.
-             * Relations: leader k + mnemonic. */
+             * so the positions transfer. Doubled forms go on the row above. */
             lead_up     { sequence = <A I>; bindings = <&c_up>; };  // ↑
             lead_left   { sequence = <A J>; bindings = <&c_left>; };  // ←
             lead_down   { sequence = <A K>; bindings = <&c_down>; };  // ↓
@@ -332,9 +331,7 @@ COMPOSE(c_inf,     &kp N8    &kp N8)               // infinity
  *   *  the compose table's Greek prefix: all 25 letters, plus o=composition
  *      and .=dot operator. Its letters are the table's, not phonetic: theta=u,
  *      xi=j, phi=f, chi=x, psi=c, omega=v.
- *   ^  superscript, _ subscript: 0-9 - + = ( )
- *   {  set relations: (=subset )=superset U=union ^=intersection,
- *      with = before the bracket for the underlined forms. */
+ *   ^  superscript, _ subscript: 0-9 - + = ( ) */
 COMPOSE(c_greek,  &kp ASTRK)
 COMPOSE(c_sup,    &kp CARET)
 COMPOSE(c_sub,    &kp UNDER)
@@ -352,11 +349,11 @@ COMPOSE2(c_ring,  &kp ASTRK &kp O)                 // ring operator
 COMPOSE2(c_cdot,  &kp ASTRK &kp DOT)               // dot operator
 COMPOSE(c_otimes, &kp LPAR &kp X &kp X &kp RPAR)
 COMPOSE(c_oplus,  &kp LPAR &kp PLUS &kp RPAR)
-/* Five sequences come from ~/.XCompose rather than a standard table: this one
- * has no standard rule at all, and the four marked below have one that is
- * unreachable, because a shorter sequence completes first and the rest is
- * typed literally. */
-COMPOSE2(c_prod,  &kp P &kp R &kp O &kp D)         // product
+/* Seven sequences need ~/.XCompose rather than a standard table: this one has
+ * no standard rule at all, four have one that a shorter sequence completes
+ * before it, and for-all and exists sit on sequences the base table already
+ * uses. Each is marked needs-XCompose below. */
+COMPOSE2(c_prod,  &kp P &kp R &kp O &kp D)         // product, needs-XCompose
 
 /* Number sets, doubled capitals in the table. */
 COMPOSE(c_reals,  &kp LS(R) &kp LS(R))
@@ -366,17 +363,17 @@ COMPOSE(c_rats,   &kp LS(Q) &kp LS(Q))
 COMPOSE(c_cplx,   &kp LS(C) &kp LS(C))
 COMPOSE(c_quats,  &kp PIPE  &kp LS(H))
 
-COMPOSE2(c_iff,   &kp I &kp F &kp F)                   // if and only if
-COMPOSE2(c_bicond,&kp L &kp R)                         // bidirectional
+COMPOSE2(c_iff,   &kp I &kp F &kp F)               // if and only if, needs-XCompose
+COMPOSE2(c_bicond,&kp L &kp R)                     // bidirectional, needs-XCompose
 COMPOSE(c_xor,    &kp BSLH &kp UNDER &kp FSLH)         // exclusive or
 
 /* Logic and set membership. */
 COMPOSE(c_in,     &kp I     &kp N)
-COMPOSE2(c_notin, &kp N &kp O &kp T &kp I &kp N)
+COMPOSE2(c_notin, &kp N &kp O &kp T &kp I &kp N)   // needs-XCompose
 COMPOSE(c_ni,     &kp N     &kp I)
 COMPOSE(c_empty,  &kp N0    &kp FSLH)
-COMPOSE2(c_all,   &kp A &kp L &kp L)
-COMPOSE2(c_exists,&kp E &kp X &kp I)
+COMPOSE2(c_all,   &kp A &kp L &kp L)               // needs-XCompose
+COMPOSE2(c_exists,&kp E &kp X &kp I)               // needs-XCompose
 COMPOSE(c_not,    &kp COMMA &kp MINUS)
 COMPOSE(c_and,    &kp FSLH  &kp BSLH)
 COMPOSE(c_or,     &kp BSLH  &kp FSLH)
@@ -389,7 +386,7 @@ COMPOSE(c_supset, &kp LBRC  &kp RPAR)
 COMPOSE(c_thus,   &kp COLON &kp DOT)
 COMPOSE(c_since,  &kp DOT   &kp COLON)
 
-/* Relations, alongside the existing != <= >= ~~. */
+/* Relations. */
 COMPOSE(c_ident,  &kp EQUAL &kp EQUAL)
 COMPOSE(c_cong,   &kp TILDE &kp EQUAL)
 COMPOSE(c_ll,     &kp PLUS  &kp LT)
@@ -416,7 +413,7 @@ COMPOSE(c_twodot, &kp N2    &kp DOT)
 COMPOSE(c_iquest, &kp QMARK &kp QMARK)
 COMPOSE(c_iexcl,  &kp EXCL  &kp EXCL)
 COMPOSE(c_defeq,  &kp COLON &kp EQUAL)
-COMPOSE2(c_hdots, &kp D &kp O &kp T &kp S)
+COMPOSE2(c_hdots, &kp D &kp O &kp T &kp S)         // needs-XCompose
 COMPOSE(c_vdots,  &kp V     &kp DOT   &kp DOT)
 COMPOSE(c_ddots,  &kp DOT   &kp BSLH  &kp DOT)
 COMPOSE2(c_qed,   &kp LS(Q) &kp LS(E) &kp LS(D))
