@@ -352,8 +352,10 @@ COMPOSE2(c_ring,  &kp ASTRK &kp O)                 // ring operator
 COMPOSE2(c_cdot,  &kp ASTRK &kp DOT)               // dot operator
 COMPOSE(c_otimes, &kp LPAR &kp X &kp X &kp RPAR)
 COMPOSE(c_oplus,  &kp LPAR &kp PLUS &kp RPAR)
-/* Not in the compose tables, so the rule is ours, in ~/.XCompose. It follows
- * the table's own convention for word sequences. */
+/* Five sequences come from ~/.XCompose rather than a standard table: this one
+ * has no standard rule at all, and the four marked below have one that is
+ * unreachable, because a shorter sequence completes first and the rest is
+ * typed literally. */
 COMPOSE2(c_prod,  &kp P &kp R &kp O &kp D)         // product
 
 /* Number sets, doubled capitals in the table. */
@@ -364,17 +366,17 @@ COMPOSE(c_rats,   &kp LS(Q) &kp LS(Q))
 COMPOSE(c_cplx,   &kp LS(C) &kp LS(C))
 COMPOSE(c_quats,  &kp PIPE  &kp LS(H))
 
-COMPOSE(c_iff,    &kp LT &kp MINUS &kp EQUAL &kp GT)   // if and only if
-COMPOSE(c_bicond, &kp LT &kp MINUS &kp GT)             // bidirectional
+COMPOSE2(c_iff,   &kp I &kp F &kp F)                   // if and only if
+COMPOSE2(c_bicond,&kp L &kp R)                         // bidirectional
 COMPOSE(c_xor,    &kp BSLH &kp UNDER &kp FSLH)         // exclusive or
 
 /* Logic and set membership. */
 COMPOSE(c_in,     &kp I     &kp N)
-COMPOSE(c_notin,  &kp EXCL  &kp I     &kp N)
+COMPOSE2(c_notin, &kp N &kp O &kp T &kp I &kp N)
 COMPOSE(c_ni,     &kp N     &kp I)
 COMPOSE(c_empty,  &kp N0    &kp FSLH)
-COMPOSE(c_all,    &kp LS(A) &kp LS(A))
-COMPOSE(c_exists, &kp LS(E) &kp LS(E))
+COMPOSE2(c_all,   &kp A &kp L &kp L)
+COMPOSE2(c_exists,&kp E &kp X &kp I)
 COMPOSE(c_not,    &kp COMMA &kp MINUS)
 COMPOSE(c_and,    &kp FSLH  &kp BSLH)
 COMPOSE(c_or,     &kp BSLH  &kp FSLH)
@@ -414,7 +416,7 @@ COMPOSE(c_twodot, &kp N2    &kp DOT)
 COMPOSE(c_iquest, &kp QMARK &kp QMARK)
 COMPOSE(c_iexcl,  &kp EXCL  &kp EXCL)
 COMPOSE(c_defeq,  &kp COLON &kp EQUAL)
-COMPOSE(c_hdots,  &kp C     &kp DOT   &kp DOT)
+COMPOSE2(c_hdots, &kp D &kp O &kp T &kp S)
 COMPOSE(c_vdots,  &kp V     &kp DOT   &kp DOT)
 COMPOSE(c_ddots,  &kp DOT   &kp BSLH  &kp DOT)
 COMPOSE2(c_qed,   &kp LS(Q) &kp LS(E) &kp LS(D))
