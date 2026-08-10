@@ -750,6 +750,12 @@ combos:
 - p: [9, 10]
   k: ']'
   l: [Base]
+- p: [30, 31]
+  k: '!='
+  l: [Base]
+- p: [31, 32]
+  k: ->
+  l: [Base]
 - p: [32, 33]
   k: =>
   l: [Base]
@@ -758,6 +764,12 @@ combos:
   l: [Base]
 - p: [19, 20]
   k: ESC
+  l: [Base]
+- p: [13, 14]
+  k: '='
+  l: [Base]
+- p: [21, 22]
+  k: '-'
   l: [Base]
 - p: [25, 26]
   k: Ctl+Z
