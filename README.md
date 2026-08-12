@@ -1,4 +1,4 @@
-# zmk-config — Corne Choc Pro BT
+# zmk-config for Corne Choc Pro BT
 
 [ZMK](https://zmk.dev) firmware for a
 [Keebart Corne Choc Pro BT](https://www.keebart.com/products/corne-wireless).
