@@ -509,7 +509,7 @@ ZMK_LAYER(Fun,
 
 &kp CAPS &kp F12   &kp F7   &kp F8   &kp F9   &kp PSCRN         &none       &none  &none      &none       &none       &none      &none     &none
 &kp KP_NUM &kp F11 &kp F4   &kp F5   &kp F6   &kp SLCK          &none       &none  &tog FUN   &kp RCTRL   &kp RSHFT   &kp LALT   &kp RGUI  &none
-&none    &kp F10   &kp F1   &kp F2   &kp F3   &kp PAUSE_BREAK                      &none      &none       &none       &none      &none     &trans
+&none    &kp F10   &kp F1   &kp F2   &kp F3   &kp PAUSE_BREAK                      &td_reset  &td_boot    &none       &none      &none     &trans
                                       &kp ESC   &kp RET    &tab_dance          &kp BSPC   &kp SPACE   &trans
 )
 
