@@ -289,8 +289,8 @@ layers:
   - F2
   - F3
   - PAUSE BREAK
-  - ''
-  - ''
+  - {t: Reset, s: 2x}
+  - {t: Boot, s: 2x}
   - ''
   - ''
   - ''
